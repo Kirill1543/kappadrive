@@ -1,12 +1,10 @@
 import pygame
-from engine.common.object.CommonObject import CommonObject
 
 
-class CircularObject(CommonObject):
-    def __init__(self, center, texture, r):
-        CommonObject.__init__(self, center, texture)
+# Interface
+class CircularObject:
+    def __init__(self, r):
         self.radius = r
-        self.bounding = pygame.Rect((center.x - r, center.y - r), (2*r, 2*r))
 
     @property
     def r(self):
@@ -15,3 +13,7 @@ class CircularObject(CommonObject):
     @r.setter
     def r(self, value):
         self.radius = value
+
+    @property
+    def bounding(self):
+        return pygame.Rect((self.center.x - self.radius, self.center.y - self.radius), (2*self.radius, 2*self.radius))

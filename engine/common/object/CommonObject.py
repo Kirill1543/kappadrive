@@ -46,7 +46,9 @@ class CommonObject(object):
         else:
             return False
 
-    def center_on(self, c_obj):
-        self.centerx = c_obj.centerx
-        self.centery = c_obj.centery
+    def center_on_coords(self, x, y):
+        self.centerx = x
+        self.centery = y
 
+    def center_on(self, c_obj):
+        self.center_on_coords(c_obj.centerx, c_obj.centery)

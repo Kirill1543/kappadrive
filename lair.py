@@ -10,12 +10,12 @@ try:
     import pygame
     from socket import *
     from pygame.locals import *
-    from model.Settings import Settings
-    from model.Screen import Screen
-    from model.Player import Player
-    from model.Point import Point
-except ImportError, err:
-    print "couldn't load module. %s" % (err)
+    from engine.Settings import Settings
+    from engine.common.screen.Screen import Screen
+    from engine.game.Player import Player
+    from engine.common.object.Point import Point
+except ImportError as err:
+    print("couldn't load module. %s" % err)
     sys.exit(2)
 
 def main():
@@ -33,7 +33,7 @@ def main():
 
     game_screen.map.add_obj(player)
 
-    print os.path.join(os.getcwd(), 'img', 'textures.png')
+    print(os.path.join(os.getcwd(), 'img', 'textures.png'))
     while 1:
         # Make sure game doesn't run at more than 60 frames per second
         clock.tick(60)
@@ -60,9 +60,9 @@ def main():
                     player.stop_move(u'RIGHT')
 
         player.update()
-        print player.center.coords
+        print(player.center.coords)
         game_screen.camera.center_on(player)
-        print game_screen.camera.center.coords
+        print(game_screen.camera.center.coords)
         game_screen.blit()
 
         pygame.display.flip()

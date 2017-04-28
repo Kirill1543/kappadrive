@@ -11,7 +11,7 @@ from engine.common.texture.BackgroundTexture import BackgroundTexture
 class Screen(object):
     def __init__(self, w=Settings.SCREEN_DEFAULT_WIDTH, h=Settings.SCREEN_DEFAULT_HEIGHT):
 
-        print "Screen created"
+        print("Screen created")
 
         self.mode = u'MENU'
         self.screen = pygame.display.set_mode((w, h))
@@ -32,8 +32,8 @@ class Screen(object):
         # print image.get_rect().top, image.get_rect().left, image.get_rect().w, image.get_rect().h
         s_w = Settings.BACKGROUND_TEXTURE_SOURCE_WIDTH
         s_h = Settings.BACKGROUND_TEXTURE_SOURCE_HEIGHT
-        for j in xrange(0, 1):
-            for i in xrange(0, 2):
+        for j in range(0, 1):
+            for i in range(0, 2):
                 # print i, j
                 self.background_textures.append(pygame.Surface((w, h)))
                 self.background_textures[i].blit(
@@ -60,7 +60,7 @@ class Screen(object):
 
     @staticmethod
     def get_box_id_by_coords(x, y, w=Settings.BOX_WIDTH, h=Settings.BOX_HEIGHT):
-        return x / w, y / h
+        return x // w, y // h
 
     def get_box(self, x, y, l=0):
         return self.map.boxes[l][y][x]
@@ -78,11 +78,11 @@ class Screen(object):
 
         offset_h = max(self.camera.y, 0) % Settings.BOX_HEIGHT
         pos_y = Settings.CAMERA_SCREEN_POSITION_Y - min(self.camera.y, 0)
-        for box_h in xrange(lt_box_id[1], rb_box_id[1] + 1):
+        for box_h in range(lt_box_id[1], rb_box_id[1] + 1):
             pos_x = Settings.CAMERA_SCREEN_POSITION_X - min(self.camera.x, 0)
             offset_w = max(self.camera.x, 0) % Settings.BOX_WIDTH
 
-            for box_w in xrange(lt_box_id[0], rb_box_id[0] + 1):
+            for box_w in range(lt_box_id[0], rb_box_id[0] + 1):
                 img_lt_corner = (offset_w, offset_h)
                 img_size = (Settings.BOX_WIDTH - offset_w, Settings.BOX_HEIGHT - offset_h)
                 curr_box = self.map.boxes[self.camera.level][box_h][box_w]
@@ -118,14 +118,14 @@ class Screen(object):
         #
         # print "Blitting Map"
         lt_box_id = (
-            max(self.camera.x / Settings.BACKGROUND_TEXTURE_WIDTH, 0),
-            max(self.camera.y / Settings.BACKGROUND_TEXTURE_HEIGHT, 0)
+            max(self.camera.x // Settings.BACKGROUND_TEXTURE_WIDTH, 0),
+            max(self.camera.y // Settings.BACKGROUND_TEXTURE_HEIGHT, 0)
         )
         rb_box_id = (
             min(self.camera.x + Settings.CAMERA_DEFAULT_WIDTH - 1,
-                self.map.width - 1) / Settings.BACKGROUND_TEXTURE_WIDTH,
+                self.map.width - 1) // Settings.BACKGROUND_TEXTURE_WIDTH,
             min(self.camera.y + Settings.CAMERA_DEFAULT_HEIGHT - 1,
-                self.map.height - 1) / Settings.BACKGROUND_TEXTURE_HEIGHT
+                self.map.height - 1) // Settings.BACKGROUND_TEXTURE_HEIGHT
         )
         offset_w = 0
         offset_h = 0
@@ -133,16 +133,16 @@ class Screen(object):
             offset_w = self.camera.x - Settings.BACKGROUND_TEXTURE_WIDTH * lt_box_id[0]
         if self.camera.y > 0:
             offset_h = self.camera.y - Settings.BACKGROUND_TEXTURE_HEIGHT * lt_box_id[1]
-        text_in_box_w = Settings.BOX_WIDTH / Settings.BACKGROUND_TEXTURE_WIDTH
-        text_in_box_h = Settings.BOX_HEIGHT / Settings.BACKGROUND_TEXTURE_HEIGHT
+        text_in_box_w = Settings.BOX_WIDTH // Settings.BACKGROUND_TEXTURE_WIDTH
+        text_in_box_h = Settings.BOX_HEIGHT // Settings.BACKGROUND_TEXTURE_HEIGHT
         # print lt_box_id, rb_box_id, offset_w, offset_h
         pos_y = Settings.CAMERA_SCREEN_POSITION_Y
         is_first_h = 1
-        for box_h in xrange(lt_box_id[1], rb_box_id[1] + 1):
+        for box_h in range(lt_box_id[1], rb_box_id[1] + 1):
             is_first_w = 1
             pos_x = Settings.CAMERA_SCREEN_POSITION_X
-            for box_w in xrange(lt_box_id[0], rb_box_id[0] + 1):
-                selected_box = self.map.boxes[self.camera.level][box_h / text_in_box_h][box_w / text_in_box_w]
+            for box_w in range(lt_box_id[0], rb_box_id[0] + 1):
+                selected_box = self.map.boxes[self.camera.level][box_h // text_in_box_h][box_w // text_in_box_w]
                 texture_id = selected_box.background[box_w % text_in_box_w][box_h % text_in_box_h]
                 texture_lt = (offset_w * is_first_w, offset_h * is_first_h,)
                 texture_width = Settings.BACKGROUND_TEXTURE_WIDTH - texture_lt[0]

@@ -1,14 +1,11 @@
 import pygame
-from engine.common.object.CommonObject import CommonObject
-from engine.common.object.Point import Point
 
 
-class RectObject(CommonObject):
-    def __init__(self, corner, texture, width, height):
-        CommonObject.__init__(self, Point(corner.x + width / 2.0, corner.y + height / 2.0, corner.z), texture)
+# Interface
+class RectObject:
+    def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.bounding = pygame.Rect((corner.x, corner.y), (width, height))
 
     @property
     def w(self):
@@ -41,3 +38,7 @@ class RectObject(CommonObject):
     @y.setter
     def y(self, value):
         self.center.y = value + self.height / 2.0
+
+    @property
+    def bounding(self):
+        return pygame.Rect((self.x, self.y), (self.width, self.height))

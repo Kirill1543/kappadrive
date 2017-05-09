@@ -11,5 +11,5 @@ class NotMovingObject(object):
     def change_move(self, direction, k):
         pass
 
-    def move(self):
+    def move(self, center):
         pass

@@ -9,7 +9,7 @@ class Box(object):
 
     def get_img(self, textures):
         img = pygame.Surface((Settings.BOX_WIDTH, Settings.BOX_HEIGHT))
-        for i in xrange(Settings.BOX_TEXTURE_HEIGHT):
-            for j in xrange(Settings.BOX_TEXTURE_WIDTH):
+        for i in range(Settings.BOX_TEXTURE_HEIGHT):
+            for j in range(Settings.BOX_TEXTURE_WIDTH):
                 img.blit(textures[self.background[i][j]], (j * Settings.BACKGROUND_TEXTURE_WIDTH, i * Settings.BACKGROUND_TEXTURE_HEIGHT))
         return img

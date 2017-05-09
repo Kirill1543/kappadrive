@@ -4,7 +4,6 @@ from engine.common.object.GameObject import GameObject
 from engine.common.object.MovingObject import MovingObject
 
 
-class Player(CircularObject, GameObject):
+class Player(GameObject):
     def __init__(self, center, texture, r):
-        CircularObject.__init__(self, center, texture, r)
-        GameObject.__init__(self, MovingObject())
+        GameObject.__init__(self, center, texture, CircularObject(r), MovingObject())

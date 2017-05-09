@@ -99,11 +99,7 @@ class Screen(object):
 
     def blit_objects(self):
         for obj in self.blit_objects_queue:
-            if isinstance(obj, RectObject):
-                pass
-            elif isinstance(obj, CircularObject):
-                pygame.draw.circle(self.screen, pygame.Color(255, 0, 0),
-                                   (int(obj.center.x - self.camera.x), int(obj.center.y - self.camera.y)), obj.r, 0)
+            obj.draw(obj.center.x - self.camera.x, obj.center.y - self.camera.y, pygame.Color(255, 0, 0), self.screen)
 
     def blit_map(self):
         self.blit_objects_queue = []

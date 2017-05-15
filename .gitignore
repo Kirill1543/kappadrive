@@ -48,5 +48,8 @@ Temporary Items
 
 #Python compiled
 *.pyc
+*.pyo
+
+**/__pycache__
 
 **/.idea

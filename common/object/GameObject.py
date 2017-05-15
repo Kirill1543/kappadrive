@@ -1,6 +1,6 @@
-from engine.Settings import Settings
-from engine.common.object.ObjectStates import ObjectStates
-from engine.common.object.CommonObject import CommonObject
+from ...Settings import Settings
+from .ObjectStates import ObjectStates
+from .CommonObject import CommonObject
 
 
 class GameObject(CommonObject):

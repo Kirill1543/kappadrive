@@ -1,5 +1,5 @@
-from engine.common.texture.Texture import Texture
-from engine.Settings import Settings
+from .Texture import Texture
+from ...Settings import Settings
 
 
 class BackgroundTexture(Texture):

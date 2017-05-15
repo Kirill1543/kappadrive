@@ -1,5 +1,5 @@
-from engine.Settings import Settings
-from engine.common.object.ObjectStates import ObjectStates
+from ...Settings import Settings
+from .ObjectStates import ObjectStates
 
 
 class CommonObject(object):

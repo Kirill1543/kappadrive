@@ -1,5 +1,5 @@
 import pygame
-from engine.Settings import Settings
+from ...Settings import Settings
 
 
 class Box(object):

@@ -1,11 +1,11 @@
 import pygame
 import os
-from engine.common.camera.Camera import Camera
-from engine.common.map.Map import Map
-from engine.Settings import Settings
-from engine.common.object.RectObject import RectObject
-from engine.common.object.CircularObject import CircularObject
-from engine.common.texture.BackgroundTexture import BackgroundTexture
+from ..camera.Camera import Camera
+from ..map.Map import Map
+from ...Settings import Settings
+from ..object.RectObject import RectObject
+from ..object.CircularObject import CircularObject
+from ..texture.BackgroundTexture import BackgroundTexture
 
 
 class Screen(object):

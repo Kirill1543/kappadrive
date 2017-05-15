@@ -1,5 +1,5 @@
-from engine.common.map.Box import Box
-from engine.Settings import Settings
+from ..map.Box import Box
+from ...Settings import Settings
 import random
 
 

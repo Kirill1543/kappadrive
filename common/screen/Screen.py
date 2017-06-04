@@ -1,7 +1,7 @@
 import pygame
 import os
 from ..camera.Camera import Camera
-from ..map.Map import Map
+from ..map.BoxedMap import Map
 from ...Settings import Settings
 from ..object.RectObject import RectObject
 from ..object.CircularObject import CircularObject

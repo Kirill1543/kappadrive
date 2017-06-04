@@ -7,5 +7,5 @@ class RectObject:
         self.width = width
         self.height = height
 
-    def draw(self, x, y, color, screen):
+    def get_shape(self, color):
         pass

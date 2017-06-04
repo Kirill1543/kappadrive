@@ -1,27 +1,22 @@
 from ...Settings import Settings
-from ...core.load.LoadImage import LoadImage
+from ...core.image.Image import Image
+from ...common.texture.Texture import Texture
 
 
 class TextureBank:
     def __init__(self):
-        pass
+        self._bank = {}
 
-    @staticmethod
-    def load_packed(full_path, w=Settings.BACKGROUND_TEXTURE_WIDTH, h=Settings.BACKGROUND_TEXTURE_HEIGHT):
-        image = LoadImage.load_image(full_path)
-        if image.get_alpha is None:
-            image = image.convert()
-        else:
-            image = image.convert_alpha()
-        # print image.get_rect().top, image.get_rect().left, image.get_rect().w, image.get_rect().h
-        s_w = Settings.BACKGROUND_TEXTURE_SOURCE_WIDTH
-        s_h = Settings.BACKGROUND_TEXTURE_SOURCE_HEIGHT
+    def get(self, key):
+        return self._bank[key]
 
-        loaded_textures = []
+    def add(self, key, value):
+        self._bank[key] = value
 
-        for j in range(0, 1):
-            for i in range(0, 2):
-                # print i, j
-                loaded_textures.append(LoadImage.copy_from(image, i * s_w, j * s_h, s_w, s_h, w, h))
+    def remove(self, key):
+        del self._bank[key]
 
-        return loaded_textures
+    def load_packed(self, keys, full_path, width, height, source_width, source_height):
+        images = Image.load_packed(full_path, width, height, source_width, source_height)
+        for i in range(len(keys)):
+            self.add(keys[i], images[i])

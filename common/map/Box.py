@@ -1,15 +1,27 @@
-import pygame
 from ...Settings import Settings
+from ...core.frame.Frame import Frame
 
 
-class Box(object):
+class Box:
     def __init__(self, background):
-        self.object_list = []
-        self.background = background
+        self._object_list = []
+        self._background = background
 
-    def get_img(self, textures):
-        img = pygame.Surface((Settings.BOX_WIDTH, Settings.BOX_HEIGHT))
+    def build_background(self, textures):
+        frame = Frame((Settings.BOX_WIDTH, Settings.BOX_HEIGHT))
         for i in range(Settings.BOX_TEXTURE_HEIGHT):
             for j in range(Settings.BOX_TEXTURE_WIDTH):
-                img.blit(textures[self.background[i][j]], (j * Settings.BACKGROUND_TEXTURE_WIDTH, i * Settings.BACKGROUND_TEXTURE_HEIGHT))
-        return img
+                frame.display(textures[self._background[i][j]], (j * Settings.BACKGROUND_TEXTURE_WIDTH, i * Settings.BACKGROUND_TEXTURE_HEIGHT))
+        return frame
+
+    def add_obj(self, obj):
+        self._object_list.append(obj)
+
+    @staticmethod
+    def get_id_by_coords(x, y, w=Settings.BOX_WIDTH, h=Settings.BOX_HEIGHT):
+        return x // w, y // h
+
+    @staticmethod
+    def get_id_by_rect(x, y, w, h):
+        return (Box.get_id_by_coords(max(int(x), 0), max(int(y), 0))), (
+            Box.get_id_by_coords(min(int(x) + w, w) - 1, min(int(y) + h, h) - 1))

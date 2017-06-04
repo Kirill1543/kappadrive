@@ -21,8 +21,8 @@ class GameObject(CommonObject):
     def move(self):
         self._m.move(self.center)
 
-    def draw(self, x, y, color, screen):
-        self._shape.draw(x, y, color, screen)
+    def draw_shape_on(self, main_frame, color):
+        main_frame.display(self._shape.get_shape(color), (int(self.x) - self.radius, self.radius))
 
     @property
     def width(self):

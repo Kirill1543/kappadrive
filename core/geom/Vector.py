@@ -33,3 +33,6 @@ class Vector:
     def z(self, value):
         self._coords[2] = value
 
+    def __getitem__(self, item):
+        return self._coords[item]
+

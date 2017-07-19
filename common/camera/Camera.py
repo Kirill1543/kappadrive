@@ -2,7 +2,7 @@ from ...Settings import Settings
 from ..object.RectObject import RectObject
 from ..object.GameObject import GameObject
 from ..object.MovingObject import MovingObject
-from ..object.Point import Point
+from ...core.geom.Point import Point
 
 
 class Camera(GameObject):

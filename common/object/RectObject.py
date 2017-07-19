@@ -1,6 +1,3 @@
-import pygame
-
-
 # Interface
 class RectObject:
     def __init__(self, width, height):

@@ -1,10 +1,13 @@
 import pygame
-from .FrameFactory import FrameFactory
 
 
 class Frame:
     def __init__(self, size=(0, 0), flags=0, depth=0, masks=None):
-        self._surface = pygame.Surface(size, flags, depth, masks)
+        self._surface = pygame.Surface(size)
+
+    @staticmethod
+    def set_mode(size):
+        return Frame.by_surface(pygame.display.set_mode(size))
 
     @property
     def surface(self):
@@ -21,13 +24,29 @@ class Frame:
         return self._surface.get_alpha()
 
     def convert(self):
-        return FrameFactory.by_surface(self._surface.convert())
+        return Frame.by_surface(self._surface.convert())
 
     def convert_alpha(self):
-        return FrameFactory.by_surface(self._surface.convert_alpha())
+        return Frame.by_surface(self._surface.convert_alpha())
 
     def get_rect(self):
         return self._surface.get_rect()
 
     def subframe(self, x, y, w, h):
-        return FrameFactory.by_surface(self._surface.subsurface(x, y, w, h))
+        return Frame.by_surface(self._surface.subsurface(x, y, w, h))
+
+    def get_size(self):
+        return self._surface.get_size()
+
+    def fill(self, color):
+        self._surface.fill(color)
+
+    @staticmethod
+    def by_surface(surface):
+        frame = Frame()
+        frame.surface = surface
+        return frame
+
+    @staticmethod
+    def empty(size=(0, 0)):
+        return Frame(size)

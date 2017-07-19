@@ -78,3 +78,11 @@ class BoxedMap:
         self._capture_background(x, y, w, h, l)
         self._draw_objects()
         self._obj_draw_queue = None
+
+    @property
+    def boxes(self):
+        return self._boxes
+
+    @boxes.setter
+    def boxes(self, value):
+        self._boxes = value

@@ -1,11 +1,9 @@
 import pygame
-import os
+
+from kappa.core.frame.Frame import Frame
 from ..camera.Camera import Camera
-from ..map.BoxedMap import Map
+from ..map.BoxedMap import BoxedMap
 from ...Settings import Settings
-from ..object.RectObject import RectObject
-from ..object.CircularObject import CircularObject
-from ..texture.BackgroundTexture import BackgroundTexture
 
 
 class Screen(object):
@@ -14,8 +12,8 @@ class Screen(object):
         print("Screen created")
 
         self.mode = u'MENU'
-        self.screen = pygame.display.set_mode((w, h))
-        self.background = pygame.Surface(self.screen.get_size()).convert()
+        self.screen = Frame.set_mode((w, h))
+        self.background = Frame.by_surface(pygame.Surface(self.screen.get_size()).convert())
         self.set_background_color(Settings.BACKGROUND_DEFAULT_COLOR)
         self.background_textures = []
 
@@ -35,16 +33,16 @@ class Screen(object):
         for j in range(0, 1):
             for i in range(0, 2):
                 # print i, j
-                self.background_textures.append(pygame.Surface((w, h)))
-                self.background_textures[i].blit(
-                    pygame.transform.scale(image.subsurface(i * s_w, j * s_h, s_w, s_h), (w, h)), (0, 0))
+                self.background_textures.append(Frame.by_surface(pygame.Surface((w, h))))
+                self.background_textures[i].display(
+                    Frame.by_surface(pygame.transform.scale(image.subsurface(i * s_w, j * s_h, s_w, s_h), (w, h))), (0, 0))
 
     def set_background_color(self, color_rgb):
         self.background.fill(color_rgb)
 
     def load_random_map(self, w, h, l=1):
         self.mode = u'MAP'
-        self.map = Map(w, h, l)
+        self.map = BoxedMap(w, h, l)
         self.camera = Camera()
 
         self.map.set_random_background()
@@ -52,7 +50,7 @@ class Screen(object):
 
     def blit(self):
         # print "Blitting"
-        self.screen.blit(self.background, (0, 0))
+        self.screen.display(self.background, (0, 0))
         if self.mode == u'MENU':
             self.blit_menu()
         elif self.mode == u'MAP':
@@ -86,8 +84,8 @@ class Screen(object):
                 img_lt_corner = (offset_w, offset_h)
                 img_size = (Settings.BOX_WIDTH - offset_w, Settings.BOX_HEIGHT - offset_h)
                 curr_box = self.map.boxes[self.camera.level][box_h][box_w]
-                img_to_blit = curr_box.get_img(self.background_textures)
-                self.screen.blit(img_to_blit.subsurface(img_lt_corner, img_size), (pos_x, pos_y))
+                img_to_blit = curr_box.build_background(self.background_textures)
+                self.screen.display(img_to_blit.subframe(*img_lt_corner, *img_size), (pos_x, pos_y))
 
                 self.blit_objects_queue += curr_box.object_list
 
@@ -99,7 +97,8 @@ class Screen(object):
 
     def blit_objects(self):
         for obj in self.blit_objects_queue:
-            obj.draw(obj.center.x - self.camera.x, obj.center.y - self.camera.y, pygame.Color(255, 0, 0), self.screen)
+            # obj.draw_shape_on(obj.center.x - self.camera.x, obj.center.y - self.camera.y, pygame.Color(255, 0, 0), self.screen)
+            pass
 
     def blit_map(self):
         self.blit_objects_queue = []

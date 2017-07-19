@@ -1,6 +1,4 @@
-from ...Settings import Settings
 from ...core.image.Image import Image
-from ...common.texture.Texture import Texture
 
 
 class TextureBank:

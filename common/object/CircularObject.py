@@ -1,4 +1,3 @@
-import pygame
 from ...core.frame.Frame import Frame
 from ...core.primitives.Draw import Draw
 

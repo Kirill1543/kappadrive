@@ -1,5 +1,3 @@
-from ...Settings import Settings
-from .ObjectStates import ObjectStates
 from .CommonObject import CommonObject
 
 

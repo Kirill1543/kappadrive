@@ -20,7 +20,7 @@ class GameObject(CommonObject):
         self._m.move(self.center)
 
     def draw_shape_on(self, main_frame, color):
-        main_frame.display(self._shape.get_shape(color), (int(self.x) - self.radius, self.radius))
+        main_frame.display(self._shape.get_shape(color), (int(self.x), int(self.y)))
 
     @property
     def width(self):
@@ -32,16 +32,16 @@ class GameObject(CommonObject):
 
     @property
     def x(self):
-        return self.center.x - self._shape.width / 2
+        return self.center.x - self._shape.width // 2
 
     @x.setter
     def x(self, value):
-        self.center.x = value + self._shape.width / 2
+        self.center.x = value + self._shape.width // 2
 
     @property
     def y(self):
-        return self.center.y - self._shape.height / 2
+        return self.center.y - self._shape.height // 2
 
     @y.setter
     def y(self, value):
-        self.center.y = value + self._shape.height / 2
+        self.center.y = value + self._shape.height // 2

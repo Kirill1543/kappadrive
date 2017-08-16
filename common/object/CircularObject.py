@@ -11,3 +11,11 @@ class CircularObject:
         frame = Frame((self.radius*2, self.radius*2))
         Draw.circle(frame, color, size, self.radius, 0)
         return frame
+
+    @property
+    def width(self):
+        return self.radius * 2
+
+    @property
+    def height(self):
+        return self.radius * 2

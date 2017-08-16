@@ -1,30 +1,31 @@
-from math import hypot
+from kappa.core.geom.Coordinates import Coordinates
+from kappa.core.geom.Vector import Vector
 
 
-class Point(object):
-    def __init__(self, x, y, z):
-        self.x = x
-        self.y = y
-        self.z = z
+class Point(Coordinates):
 
-    @property
-    def level(self):
-        return self.z
+    def __neg__(self):
+        return Point(*list(-x for x in self.coords))
 
-    @level.setter
-    def level(self, value):
-        self.z = value
+    def __add__(self, other):
+        if not isinstance(other, Vector):
+            raise NotImplementedError("Not supported to add non-Vector to Point")
+        return Point(*list(x + y for x, y in zip(self.coords, other.coords)))
 
-    @property
-    def coords(self):
-        return [self.x, self.y, self.z]
+    def __sub__(self, other):
+        if not isinstance(other, Coordinates):
+            raise NotImplementedError("Not supported to sub non-Coordinate from Point")
+        return dict(Vector=Point, Point=Vector)[other.__class__.__name__](
+            *list(x - y for x, y in zip(self.coords, other.coords)))
 
-    @coords.setter
-    def coords(self, value):
-        self.x, self.y, self.z = value
+    def __iadd__(self, other):
+        if not isinstance(other, Vector):
+            raise NotImplementedError("Not supported to iadd non-Vector to Point")
+        self.coords = list(x + y for x, y in zip(self.coords, other.coords))
+        return self
 
-    def distance_to(self, x, y):
-        return hypot(x - self.x, y - self.y)
-
-    def distance_to_point(self, p):
-        return self.distance_to(p.x, p.y)
+    def __isub__(self, other):
+        if not isinstance(other, Vector):
+            raise NotImplementedError("Not supported to isub non-Vector from Point")
+        self.coords = list(x - y for x, y in zip(self.coords, other.coords))
+        return self

@@ -1,3 +1,17 @@
+import os
+from datetime import datetime
+
+import logging
+
+PACKAGE_PARENT = 'src'
+SCRIPT_DIR = os.path.dirname(
+    os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__), os.pardir, os.pardir)))
+
+LOG_DIR: str = os.path.join(SCRIPT_DIR, 'logs')
+LOG_FILE: str = 'log%s.log' % datetime.now().strftime('%Y_%m_%d_%H-%M-%S')
+LOG_LEVEL = logging.DEBUG
+
+
 class Settings(object):
     MAP_WIDTH = 512
     MAP_HEIGHT = 512

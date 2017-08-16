@@ -1,38 +1,28 @@
-class Vector:
-    def __init__(self, coords):
-        self._coords = coords
+from kappa.core.geom.Coordinates import Coordinates
 
-    @property
-    def dimension(self):
-        return len(self._coords)
 
-    def __len__(self):
-        return len(self._coords)
+class Vector(Coordinates):
+    def __neg__(self):
+        return Vector(*list(-x for x in self.coords))
 
-    @property
-    def x(self):
-        return self._coords[0]
+    def __add__(self, other):
+        if not isinstance(other, Vector):
+            raise NotImplementedError("Not supported to add non-Vector to Vector")
+        return Vector(*list(x + y for x, y in zip(self.coords, other.coords)))
 
-    @x.setter
-    def x(self, value):
-        self._coords[0] = value
+    def __sub__(self, other):
+        if not isinstance(other, Vector):
+            raise NotImplementedError("Not supported to sub non-Vector from Vector")
+        return Vector(*list(x - y for x, y in zip(self.coords, other.coords)))
 
-    @property
-    def y(self):
-        return self._coords[1]
+    def __iadd__(self, other):
+        if not isinstance(other, Vector):
+            raise NotImplementedError("Not supported to iadd non-Vector to Vector")
+        self.coords = list(x + y for x, y in zip(self.coords, other.coords))
+        return self
 
-    @y.setter
-    def y(self, value):
-        self._coords[1] = value
-
-    @property
-    def z(self):
-        return self._coords[2]
-
-    @z.setter
-    def z(self, value):
-        self._coords[2] = value
-
-    def __getitem__(self, item):
-        return self._coords[item]
-
+    def __isub__(self, other):
+        if not isinstance(other, Vector):
+            raise NotImplementedError("Not supported to isub non-Vector from Vector")
+        self.coords = list(x - y for x, y in zip(self.coords, other.coords))
+        return self

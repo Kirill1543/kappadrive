@@ -1,16 +1,20 @@
 import pygame
+from pygame.time import Clock
+
+from kappa.common.object.GameObject import GameObject
+from kappa.common.screen.Screen import Screen
 
 
 class Instance:
-    def __init__(self, caption=None):
-        self.caption = caption
-        self.clock = None
-        self.screen = None
-        self.keyboard_link = None
+    def __init__(self, caption: str = None):
+        self.caption: str = caption
+        self.clock: Clock = None
+        self.screen: Screen = None
+        self.keyboard_link: GameObject = None
 
     def init(self):
         pygame.init()
-        self.clock = pygame.time.Clock()
+        self.clock = Clock()
         pygame.display.set_caption(self.caption)
 
     def link_keyboard_object(self, obj):
@@ -25,7 +29,7 @@ class Instance:
 
             self.update()
 
-            self.screen.blit()
+            self.screen.display()
 
             pygame.display.flip()
 

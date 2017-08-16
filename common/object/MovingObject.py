@@ -1,4 +1,9 @@
+from kappa.logger.Logger import Logger
+
+
 class MovingObject(object):
+    log = Logger(__name__).get()
+
     def __init__(self):
         self.speed = 1.0
         self.move_vector = [0.0, 0.0]
@@ -17,3 +22,4 @@ class MovingObject(object):
     def move(self, center):
         center.x += self.move_vector[0]
         center.y += self.move_vector[1]
+        # MovingObject.log.debug("Moving to (%s;%s)" % (center.x, center.y))

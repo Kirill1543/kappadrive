@@ -1,12 +1,13 @@
+from kappa.core.geom.Point import Point
 from ...Settings import Settings
 from .ObjectStates import ObjectStates
 
 
 class CommonObject(object):
     def __init__(self, center, texture):
-        self.center = center
+        self.center: Point = center
         self.texture = texture
-        self.state = ObjectStates.STILL
+        self.state: ObjectStates = ObjectStates.STILL
 
     @property
     def centerx(self):

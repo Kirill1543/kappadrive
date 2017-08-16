@@ -17,9 +17,9 @@ class Screen(object):
         self.set_background_color(Settings.BACKGROUND_DEFAULT_COLOR)
         self.background_textures = []
 
-        self.camera = None
-        self.map = None
-        self.blit_objects_queue = None
+        self.camera: Camera = None
+        self.map: BoxedMap = None
+        self.blit_objects_queue: list = None
 
     def load_textures(self, fullname, w=Settings.BACKGROUND_TEXTURE_WIDTH, h=Settings.BACKGROUND_TEXTURE_HEIGHT):
         image = pygame.image.load(fullname)
@@ -35,7 +35,8 @@ class Screen(object):
                 # print i, j
                 self.background_textures.append(Frame.by_surface(pygame.Surface((w, h))))
                 self.background_textures[i].display(
-                    Frame.by_surface(pygame.transform.scale(image.subsurface(i * s_w, j * s_h, s_w, s_h), (w, h))), (0, 0))
+                    Frame.by_surface(pygame.transform.scale(image.subsurface(i * s_w, j * s_h, s_w, s_h), (w, h))),
+                    (0, 0))
 
     def set_background_color(self, color_rgb):
         self.background.fill(color_rgb)
@@ -48,7 +49,7 @@ class Screen(object):
         self.map.set_random_background()
         # print self.map.boxes[0]
 
-    def blit(self):
+    def display(self):
         # print "Blitting"
         self.screen.display(self.background, (0, 0))
         if self.mode == u'MENU':
@@ -97,7 +98,7 @@ class Screen(object):
 
     def blit_objects(self):
         for obj in self.blit_objects_queue:
-            # obj.draw_shape_on(obj.center.x - self.camera.x, obj.center.y - self.camera.y, pygame.Color(255, 0, 0), self.screen)
+            obj.draw_shape_on(self.screen, pygame.Color(255, 0, 0))
             pass
 
     def blit_map(self):
@@ -145,7 +146,7 @@ class Screen(object):
                 texture_to_render = self.background_textures[texture_id].subsurface(texture_lt,
                                                                                     (texture_width, texture_height))
 
-                self.screen.blit(texture_to_render, (pos_x - min(self.camera.x, 0), pos_y - min(self.camera.y, 0)))
+                self.screen.display(texture_to_render, (pos_x - min(self.camera.x, 0), pos_y - min(self.camera.y, 0)))
                 pos_x += Settings.BACKGROUND_TEXTURE_WIDTH
                 if is_first_w:
                     pos_x -= offset_w

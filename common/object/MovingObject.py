@@ -1,3 +1,4 @@
+from kappa.core.geom.Vector import Vector
 from kappa.logger.Logger import Logger
 
 
@@ -5,8 +6,8 @@ class MovingObject(object):
     log = Logger(__name__).get()
 
     def __init__(self):
-        self.speed = 1.0
-        self.move_vector = [0.0, 0.0]
+        self.speed = 3.0
+        self.move_vector = Vector(0.0, 0.0)
 
     def change_move(self, direction, k):
         k = k * self.speed

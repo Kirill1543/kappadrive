@@ -7,9 +7,13 @@ class CircularObject:
         self.radius = r
 
     def get_shape(self, color):
-        size = (self.radius, self. radius)
-        frame = Frame((self.radius*2, self.radius*2))
-        Draw.circle(frame, color, size, self.radius, 0)
+        center = (self.radius, self.radius)
+        frame = Frame((self.radius * 2, self.radius * 2))
+        ck = (127, 33, 33)
+        frame.surface.fill(ck)
+        frame.surface.set_colorkey(ck)
+        frame.surface.set_at(center, color)
+        Draw.circle(frame, color, center, self.radius, 1)
         return frame
 
     @property

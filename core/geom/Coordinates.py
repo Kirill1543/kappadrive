@@ -37,5 +37,8 @@ class Coordinates:
     def __getitem__(self, item):
         return self._coords[item]
 
+    def __setitem__(self, key, value):
+        self._coords[key] = value
+
     def __len__(self):
         return len(self._coords)

@@ -1,8 +1,13 @@
+from kappa.core.frame import Frame
+from kappa.core.geom.Point import Point
+from kappa.logger.Logger import Logger
 from .CommonObject import CommonObject
 
 
 class GameObject(CommonObject):
-    def __init__(self, center, texture, shape, moving_style):
+    log = Logger(__name__).get()
+
+    def __init__(self, center: Point, texture, shape, moving_style):
         CommonObject.__init__(self, center, texture)
         self._shape = shape
         self._m = moving_style
@@ -19,8 +24,9 @@ class GameObject(CommonObject):
     def move(self):
         self._m.move(self.center)
 
-    def draw_shape_on(self, main_frame, color):
-        main_frame.display(self._shape.get_shape(color), (int(self.x), int(self.y)))
+    def draw_shape_on(self, main_frame: Frame, center: Point, color):
+        GameObject.log.debug("Adding texture in {}".format(center.coords))
+        main_frame.display(self._shape.get_shape(color), (int(center.x), int(center.y)))
 
     @property
     def width(self):
@@ -45,3 +51,7 @@ class GameObject(CommonObject):
     @y.setter
     def y(self, value):
         self.center.y = value + self._shape.height // 2
+
+    @property
+    def topleft(self):
+        return Point(self.x, self.y, 0)

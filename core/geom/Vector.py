@@ -2,6 +2,9 @@ from kappa.core.geom.Coordinates import Coordinates
 
 
 class Vector(Coordinates):
+    def __init__(self, *args):
+        super().__init__(*args)
+
     def __neg__(self):
         return Vector(*list(-x for x in self.coords))
 

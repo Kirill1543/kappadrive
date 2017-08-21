@@ -29,6 +29,7 @@ class Instance:
 
             self.update()
 
+            self.screen.camera.center_on(self.keyboard_link)
             self.screen.display()
 
             pygame.display.flip()

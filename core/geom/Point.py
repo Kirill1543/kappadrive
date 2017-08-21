@@ -3,6 +3,8 @@ from kappa.core.geom.Vector import Vector
 
 
 class Point(Coordinates):
+    def __init__(self, *args):
+        super().__init__(*args)
 
     def __neg__(self):
         return Point(*list(-x for x in self.coords))

@@ -2,7 +2,7 @@ from ...core.frame.Frame import Frame
 from ...core.primitives.Draw import Draw
 
 
-class CircularObject:
+class CircleShape:
     def __init__(self, r):
         self.radius = r
 

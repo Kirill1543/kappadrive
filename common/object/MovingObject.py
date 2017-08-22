@@ -5,22 +5,29 @@ from kappa.logger.Logger import Logger
 class MovingObject(object):
     log = Logger(__name__).get()
 
-    def __init__(self):
-        self.speed = 3.0
-        self.move_vector = Vector(0.0, 0.0)
+    def __init__(self, vector: Vector = Vector(0.0, 0.0), speed=3.0):
+        self.speed = speed
+        self._move_vector: Vector = vector
 
     def change_move(self, direction, k):
         k = k * self.speed
         if direction == u'UP':
-            self.move_vector[1] -= k
+            self._move_vector[1] -= k
         elif direction == u'DOWN':
-            self.move_vector[1] += k
+            self._move_vector[1] += k
         elif direction == u'LEFT':
-            self.move_vector[0] -= k
+            self._move_vector[0] -= k
         elif direction == u'RIGHT':
-            self.move_vector[0] += k
+            self._move_vector[0] += k
 
     def move(self, center):
-        center.x += self.move_vector[0]
-        center.y += self.move_vector[1]
-        # MovingObject.log.debug("Moving to (%s;%s)" % (center.x, center.y))
+        center.x += self._move_vector[0]
+        center.y += self._move_vector[1]
+
+    @property
+    def move_vector(self):
+        return self._move_vector
+
+    @move_vector.setter
+    def move_vector(self, value: Vector):
+        self._move_vector = value

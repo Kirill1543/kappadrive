@@ -73,12 +73,12 @@ class Screen(object):
 
     def blit_background(self):
         lt_box_id, rb_box_id = self.get_boxes_by_camera()
-
-        offset_h = max(self.camera.y, 0) % Settings.BOX_HEIGHT
+        Screen.log.debug("Selected draw boxes:{}-{}".format(lt_box_id, rb_box_id))
+        offset_h = max(int(self.camera.y), 0) % Settings.BOX_HEIGHT
         pos_y = Settings.CAMERA_SCREEN_POSITION_Y - min(self.camera.y, 0)
         for box_h in range(lt_box_id[1], rb_box_id[1] + 1):
             pos_x = Settings.CAMERA_SCREEN_POSITION_X - min(self.camera.x, 0)
-            offset_w = max(self.camera.x, 0) % Settings.BOX_WIDTH
+            offset_w = max(int(self.camera.x), 0) % Settings.BOX_WIDTH
 
             for box_w in range(lt_box_id[0], rb_box_id[0] + 1):
                 img_lt_corner = (offset_w, offset_h)
@@ -96,6 +96,7 @@ class Screen(object):
             offset_h = 0
 
     def blit_objects(self):
+        Screen.log.debug("BoxedMap objects list:{}".format(self.map))
         for obj in self.blit_objects_queue:
             Screen.log.debug("Object Position:{}".format(obj.center.coords))
             obj.draw_shape_on(self.screen, obj.center - (self.camera.topleft - Point(0, 0, 0)), pygame.Color(255, 0, 0))

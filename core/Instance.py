@@ -3,9 +3,12 @@ from pygame.time import Clock
 
 from kappa.common.object.GameObject import GameObject
 from kappa.common.screen.Screen import Screen
+from kappa.logger.Logger import Logger
 
 
 class Instance:
+    log = Logger(__name__).get()
+
     def __init__(self, caption: str = None):
         self.caption: str = caption
         self.clock: Clock = None
@@ -28,7 +31,7 @@ class Instance:
                     return
 
             self.update()
-
+            Instance.log.debug("Player Position:{}".format(self.keyboard_link.center.coords))
             self.screen.camera.center_on(self.keyboard_link)
             self.screen.display()
 

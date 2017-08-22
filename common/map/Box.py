@@ -11,7 +11,8 @@ class Box:
         frame = Frame(size=(Settings.BOX_WIDTH, Settings.BOX_HEIGHT))
         for i in range(Settings.BOX_TEXTURE_HEIGHT):
             for j in range(Settings.BOX_TEXTURE_WIDTH):
-                frame.display(textures[self._background[i][j]], (j * Settings.BACKGROUND_TEXTURE_WIDTH, i * Settings.BACKGROUND_TEXTURE_HEIGHT))
+                frame.display(textures[self._background[i][j]],
+                              (j * Settings.BACKGROUND_TEXTURE_WIDTH, i * Settings.BACKGROUND_TEXTURE_HEIGHT))
         return frame
 
     def add_obj(self, obj):
@@ -33,3 +34,6 @@ class Box:
     @object_list.setter
     def object_list(self, value):
         self._object_list = value
+
+    def __str__(self):
+        return str(self.object_list)

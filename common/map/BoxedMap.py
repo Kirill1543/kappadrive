@@ -1,3 +1,6 @@
+from kappa.common.object.GameObject import GameObject
+from kappa.core.geom.Point import Point
+from kappa.logger.Logger import Logger
 from ..map.Box import Box
 from ...Settings import Settings
 from ...core.frame.Frame import Frame
@@ -5,6 +8,8 @@ import random
 
 
 class BoxedMap:
+    log = Logger(__name__).get()
+
     def __init__(self, width, height, levels=1):
         self.width = width
         self.height = height
@@ -17,8 +22,11 @@ class BoxedMap:
     def get_box_by_coords(self, coords):
         return self._boxes[coords[2]][coords[1] // Settings.BOX_HEIGHT][coords[0] // Settings.BOX_WIDTH]
 
-    def get_box_by_point(self, point):
-        return self.get_box_by_coords([point.x, point.y, point.z])
+    def get_box_by_point(self, point: Point):
+        return self.get_box_by_coords((int(point.x), int(point.y), int(point.z)))
+
+    def point_is_inside(self, point: Point):
+        return 0 <= point.x < self.width and 0 <= point.y < self.height
 
     def set_random_background(self):
         w = self.width // Settings.BOX_WIDTH + (self.width % Settings.BOX_WIDTH > 0)
@@ -79,6 +87,22 @@ class BoxedMap:
         self._draw_objects()
         self._obj_draw_queue = None
 
+    def try_move(self, obj: GameObject):
+        if self.point_is_inside(obj.center + obj.move_vector):
+            obj.move()
+
+    def update(self):
+        move_list = []
+        for row in self._boxes[0]:
+            for box in row:
+                for i, obj in enumerate(box.object_list):
+                    move_list.append((obj, box, i))
+        for obj, box, i in move_list:
+            self.try_move(obj)
+            if self.get_box_by_point(obj.center) != box:
+                box.object_list.pop(i)
+                self.add_obj(obj)
+
     @property
     def boxes(self):
         return self._boxes
@@ -86,3 +110,12 @@ class BoxedMap:
     @boxes.setter
     def boxes(self, value):
         self._boxes = value
+
+    def __str__(self):
+        out = ""
+        for z, row1 in enumerate(self._boxes):
+            for y, row2 in enumerate(row1):
+                for x, val in enumerate(row2):
+                    if val.object_list:
+                        out += '({}:{}:{})-{}'.format(x, y, z, val.object_list)
+        return out

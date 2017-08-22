@@ -1,4 +1,6 @@
-from kappa.core.frame import Frame
+from kappa.common.object.MovingStrategy import MovingStrategy
+from kappa.common.object.Shape import Shape
+from kappa.core.frame.Frame import Frame
 from kappa.core.geom.Point import Point
 from kappa.core.geom.Vector import Vector
 from kappa.logger.Logger import Logger
@@ -10,8 +12,8 @@ class GameObject(CommonObject):
 
     def __init__(self, center: Point, texture, shape, moving_style):
         CommonObject.__init__(self, center, texture)
-        self._shape = shape
-        self._m = moving_style
+        self._shape: Shape = shape
+        self._m: MovingStrategy = moving_style
 
     def update(self):
         pass
@@ -25,10 +27,10 @@ class GameObject(CommonObject):
     def move(self):
         self._m.move(self.center)
 
-    def draw_shape_on(self, main_frame: Frame, center: Point, color):
+    def draw_shape_on(self, main_frame: Frame, center: Point):
         topleft = (int(center.x - self.width / 2), int(center.y - self.height / 2))
         GameObject.log.debug("Adding texture in {}".format(topleft))
-        main_frame.display(self._shape.get_shape(color), topleft)
+        main_frame.display(self._shape.get_shape(), topleft)
 
     @property
     def width(self):
@@ -65,3 +67,7 @@ class GameObject(CommonObject):
     @move_vector.setter
     def move_vector(self, value: Vector):
         self._m.move_vector = value
+
+    @property
+    def is_movable(self):
+        return self._m.is_movable

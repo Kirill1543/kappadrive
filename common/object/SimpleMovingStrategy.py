@@ -1,11 +1,13 @@
+from kappa.common.object.MovingStrategy import MovingStrategy
 from kappa.core.geom.Vector import Vector
 from kappa.logger.Logger import Logger
 
 
-class MovingObject(object):
+class SimpleMovingStrategy(MovingStrategy):
     log = Logger(__name__).get()
 
     def __init__(self, vector: Vector = Vector(0.0, 0.0), speed=3.0):
+        super().__init__()
         self.speed = speed
         self._move_vector: Vector = vector
 
@@ -31,3 +33,7 @@ class MovingObject(object):
     @move_vector.setter
     def move_vector(self, value: Vector):
         self._move_vector = value
+
+    @property
+    def is_movable(self):
+        return True

@@ -1,8 +1,10 @@
 from kappa.common.object.GameObject import GameObject
+from kappa.core.Color import BLACK, WHITE
 from kappa.core.geom.Point import Point
+from kappa.core.primitives.Draw import Draw
 from kappa.logger.Logger import Logger
 from ..map.Box import Box
-from ...Settings import Settings
+from ...Settings import Settings, MAX_OBJECT_RADIUS_IN_BOXES
 from ...core.frame.Frame import Frame
 import random
 
@@ -18,6 +20,14 @@ class BoxedMap:
         self._obj_draw_queue = None
         self._display_frame = None
         self._background_textures = None
+
+    @property
+    def box_width(self):
+        return self.width // Settings.BOX_WIDTH
+
+    @property
+    def box_height(self):
+        return self.height // Settings.BOX_HEIGHT
 
     def get_box_by_coords(self, coords):
         return self._boxes[coords[2]][coords[1] // Settings.BOX_HEIGHT][coords[0] // Settings.BOX_WIDTH]
@@ -48,9 +58,6 @@ class BoxedMap:
     def add_obj_to(self, obj, pos):
         obj.center = pos
         self.get_box_by_point(pos).add_obj(obj)
-
-    def get_box(self, x, y, l=0):
-        return self._boxes[l][y][x]
 
     def _capture_background(self, x, y, w, h, l=0):
         lt_box_id, rb_box_id = Box.get_id_by_rect(x, y, w, h)
@@ -87,8 +94,21 @@ class BoxedMap:
         self._draw_objects()
         self._obj_draw_queue = None
 
+    def draw_lines(self, frame, obj, slicing):
+        curr_box = int(obj.center.x) // Settings.BOX_WIDTH, int(obj.center.y) // Settings.BOX_HEIGHT
+        BoxedMap.log.debug("Drawing Connections for {} in {}".format(obj, curr_box))
+        boxes_delta = 2 * MAX_OBJECT_RADIUS_IN_BOXES
+        for box_h in range(max(curr_box[1] - boxes_delta, 0),
+                           min(curr_box[1] + boxes_delta, self.box_height)):
+            for box_w in range(max(curr_box[0] - boxes_delta, 0),
+                               min(curr_box[0] + boxes_delta, self.box_width)):
+                for end_object in self._boxes[0][box_h][box_w].object_list:
+                    BoxedMap.log.debug(
+                        "Drawing line between {} and {}".format(obj.center.coords, end_object.center.coords))
+                    Draw.line(frame, WHITE, obj.center - slicing, end_object.center - slicing, 1)
+
     def try_move(self, obj: GameObject):
-        if self.point_is_inside(obj.center + obj.move_vector):
+        if obj.is_movable and self.point_is_inside(obj.center + obj.move_vector):
             obj.move()
 
     def update(self):

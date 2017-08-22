@@ -12,6 +12,8 @@ LOG_DIR: str = os.path.join(SCRIPT_DIR, 'logs')
 LOG_FILE: str = 'log.log'
 LOG_LEVEL = logging.DEBUG
 
+MAX_OBJECT_RADIUS_IN_BOXES = 1
+
 
 class Settings(object):
     MAP_WIDTH = 512

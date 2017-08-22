@@ -1,7 +1,7 @@
 from ...Settings import Settings
 from ..object.RectShape import RectShape
 from ..object.GameObject import GameObject
-from ..object.MovingObject import MovingObject
+from ..object.SimpleMovingStrategy import SimpleMovingStrategy
 from ...core.geom.Point import Point
 
 
@@ -11,6 +11,7 @@ class Camera(GameObject):
                             center,
                             None,
                             RectShape(Settings.CAMERA_DEFAULT_WIDTH,
-                                      Settings.CAMERA_DEFAULT_HEIGHT),
-                            MovingObject()
+                                      Settings.CAMERA_DEFAULT_HEIGHT,
+                                      ),
+                            SimpleMovingStrategy()
                             )

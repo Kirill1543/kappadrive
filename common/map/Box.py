@@ -1,3 +1,5 @@
+from kappa.core.Color import BLACK
+from kappa.core.primitives.Draw import Draw
 from ...Settings import Settings
 from ...core.frame.Frame import Frame
 
@@ -13,6 +15,7 @@ class Box:
             for j in range(Settings.BOX_TEXTURE_WIDTH):
                 frame.display(textures[self._background[i][j]],
                               (j * Settings.BACKGROUND_TEXTURE_WIDTH, i * Settings.BACKGROUND_TEXTURE_HEIGHT))
+        Draw.rect(frame, BLACK, (0, 0), (Settings.BOX_WIDTH, Settings.BOX_HEIGHT), 1)
         return frame
 
     def add_obj(self, obj):

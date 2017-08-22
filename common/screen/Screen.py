@@ -5,7 +5,7 @@ from kappa.core.geom.Point import Point
 from kappa.logger.Logger import Logger
 from ..camera.Camera import Camera
 from ..map.BoxedMap import BoxedMap
-from ...Settings import Settings
+from ...Settings import Settings, MAX_OBJECT_RADIUS_IN_BOXES
 
 
 class Screen(object):
@@ -87,20 +87,26 @@ class Screen(object):
                 img_to_blit = curr_box.build_background(self.background_textures)
                 self.screen.display(img_to_blit.subframe(*img_lt_corner, *img_size), (pos_x, pos_y))
 
-                self.blit_objects_queue += curr_box.object_list
-
                 pos_x += Settings.BOX_WIDTH - offset_w
                 offset_w = 0
 
             pos_y += Settings.BOX_HEIGHT - offset_h
             offset_h = 0
 
+        for box_h in range(min(lt_box_id[1] - MAX_OBJECT_RADIUS_IN_BOXES, 0),
+                           max(rb_box_id[1] + MAX_OBJECT_RADIUS_IN_BOXES, self.map.box_height)):
+            for box_w in range(min(lt_box_id[0] - MAX_OBJECT_RADIUS_IN_BOXES, 0),
+                               max(rb_box_id[0] + MAX_OBJECT_RADIUS_IN_BOXES, self.map.box_width)):
+                self.blit_objects_queue += self.map.boxes[self.camera.center.z][box_h][box_w].object_list
+
     def blit_objects(self):
         Screen.log.debug("BoxedMap objects list:{}".format(self.map))
         for obj in self.blit_objects_queue:
             Screen.log.debug("Object Position:{}".format(obj.center.coords))
-            obj.draw_shape_on(self.screen, obj.center - (self.camera.topleft - Point(0, 0, 0)), pygame.Color(255, 0, 0))
-            pass
+            slicing = self.camera.topleft - Point(0, 0, 0)
+            obj.draw_shape_on(self.screen, obj.center - slicing)
+            if obj.is_movable:
+                self.map.draw_lines(self.screen, obj, slicing)
 
     def blit_map(self):
         self.blit_objects_queue = []

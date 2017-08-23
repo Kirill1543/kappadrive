@@ -96,7 +96,7 @@ class BoxedMap:
 
     def expand_boxes(self, input_boxes, delta):
         return (max(input_boxes[0][0] - delta, 0), max(input_boxes[0][1] - delta, 0)), (
-            min(input_boxes[1][0] + delta, self.box_width), min(input_boxes[1][1] + delta, self.box_height))
+            min(input_boxes[1][0] + delta, self.box_width - 1), min(input_boxes[1][1] + delta, self.box_height - 1))
 
     def draw_lines(self, frame, obj, slicing):
         curr_box = int(obj.center.x) // Settings.BOX_WIDTH, int(obj.center.y) // Settings.BOX_HEIGHT

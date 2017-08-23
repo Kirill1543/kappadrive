@@ -94,14 +94,17 @@ class BoxedMap:
         self._draw_objects()
         self._obj_draw_queue = None
 
+    def expand_boxes(self, input_boxes, delta):
+        return (max(input_boxes[0][0] - delta, 0), max(input_boxes[0][1] - delta, 0)), (
+            min(input_boxes[1][0] + delta, self.box_width), min(input_boxes[1][1] + delta, self.box_height))
+
     def draw_lines(self, frame, obj, slicing):
         curr_box = int(obj.center.x) // Settings.BOX_WIDTH, int(obj.center.y) // Settings.BOX_HEIGHT
-        BoxedMap.log.debug("Drawing Connections for {} in {}".format(obj, curr_box))
         boxes_delta = 2 * MAX_OBJECT_RADIUS_IN_BOXES
-        for box_h in range(max(curr_box[1] - boxes_delta, 0),
-                           min(curr_box[1] + boxes_delta, self.box_height)):
-            for box_w in range(max(curr_box[0] - boxes_delta, 0),
-                               min(curr_box[0] + boxes_delta, self.box_width)):
+        lt, rb = self.expand_boxes((curr_box, curr_box), boxes_delta)
+        BoxedMap.log.debug("Drawing Connections for {}:{} in {}".format(obj, curr_box, (lt, rb)))
+        for box_h in range(lt[1], rb[1] + 1):
+            for box_w in range(lt[0], rb[0] + 1):
                 for end_object in self._boxes[0][box_h][box_w].object_list:
                     BoxedMap.log.debug(
                         "Drawing line between {} and {}".format(obj.center.coords, end_object.center.coords))

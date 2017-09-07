@@ -13,8 +13,9 @@ class Shape:
     def color(self, value):
         self._color = value
 
-    def get_shape(self):
-        pass
+    @property
+    def shape(self):
+        return None
 
     @property
     def width(self):
@@ -23,3 +24,15 @@ class Shape:
     @property
     def height(self):
         return 0
+
+    @property
+    def radius(self):
+        return 0
+
+    @property
+    def is_circle(self):
+        return False
+
+    @property
+    def is_rect(self):
+        return False

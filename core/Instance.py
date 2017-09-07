@@ -1,3 +1,5 @@
+import timeit
+
 import pygame
 from pygame.time import Clock
 
@@ -25,6 +27,8 @@ class Instance:
 
     def start(self):
         while 1:
+            Instance.log.debug("Starting Game Instance update iteration")
+            start_time = timeit.default_timer()
             self.clock.tick(100)
             for event in pygame.event.get():
                 if not self.parse_event(event):
@@ -36,6 +40,7 @@ class Instance:
             self.screen.display()
 
             pygame.display.flip()
+            Instance.log.debug("Total execution time={}ms".format((timeit.default_timer() - start_time) * 1000))
 
     def parse_event(self, event):
         pass

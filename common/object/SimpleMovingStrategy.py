@@ -6,13 +6,12 @@ from kappa.logger.Logger import Logger
 class SimpleMovingStrategy(MovingStrategy):
     log = Logger(__name__).get()
 
-    def __init__(self, vector: Vector = Vector(0.0, 0.0), speed=3.0):
+    def __init__(self, vector: Vector = Vector(0.0, 0.0, 0.0), speed=3.0):
         super().__init__()
-        self.speed = speed
+        self.speed: float = speed
         self._move_vector: Vector = vector
 
     def change_move(self, direction, k):
-        k = k * self.speed
         if direction == u'UP':
             self._move_vector[1] -= k
         elif direction == u'DOWN':
@@ -22,13 +21,12 @@ class SimpleMovingStrategy(MovingStrategy):
         elif direction == u'RIGHT':
             self._move_vector[0] += k
 
-    def move(self, center):
-        center.x += self._move_vector[0]
-        center.y += self._move_vector[1]
+    def get_time_offset(self, t=1):
+        return self._move_vector.normalize() * self.speed * t
 
     @property
-    def move_vector(self):
-        return self._move_vector
+    def move_vector(self, t=1):
+        return self._move_vector.normalize() * self.speed * t
 
     @move_vector.setter
     def move_vector(self, value: Vector):

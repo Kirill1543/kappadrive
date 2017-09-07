@@ -1,8 +1,11 @@
+from math import sqrt
+
 from kappa.common.object.MovingStrategy import MovingStrategy
 from kappa.common.object.Shape import Shape
 from kappa.core.frame.Frame import Frame
-from kappa.core.geom.Point import Point
-from kappa.core.geom.Vector import Vector
+from kappa.core.geom import EPSILON
+from kappa.core.geom import Point
+from kappa.core.geom import Vector
 from kappa.logger.Logger import Logger
 from .CommonObject import CommonObject
 
@@ -10,10 +13,13 @@ from .CommonObject import CommonObject
 class GameObject(CommonObject):
     log = Logger(__name__).get()
 
-    def __init__(self, center: Point, texture, shape, moving_style):
+    def __init__(self, center: Point, texture, shape: Shape, moving_style):
         CommonObject.__init__(self, center, texture)
         self._shape: Shape = shape
         self._m: MovingStrategy = moving_style
+
+    def __str__(self) -> str:
+        return "{}:{}".format(self.__class__.__name__, self.center.coords)
 
     def update(self):
         pass
@@ -24,13 +30,51 @@ class GameObject(CommonObject):
     def stop_move(self, direction):
         self._m.change_move(direction, -1)
 
-    def move(self):
-        self._m.move(self.center)
+    def move_offset(self, offset: Vector):
+        self.center += offset
+
+    def move(self, t=1):
+        self.center += self._m.get_time_offset(t)
+
+    def get_time_position(self, t=1) -> Point:
+        return self.center + self._m.get_time_offset(t)
+
+    def intersect(self, obj, t=0) -> bool:
+        if self.shape.is_circle and obj.shape.is_circle:
+            c: Vector = obj.center - self.center
+            v: Vector = self._m.get_time_offset(t)
+            r: float = obj.shape.radius + self._shape.radius
+            d = v * c - (c * c - r * r)
+            GameObject.log.debug("Calculated c={}, v={}, r={}, d={}".format(c.coords, v.coords, r, d))
+            if d >= 0.0:
+                return True
+        return False
+
+    def is_going_intersect(self, obj) -> bool:
+        return self.intersect(obj, 1)
+
+    def move_time_to(self, obj) -> float:
+        if self.shape.is_circle and obj.shape.is_circle:
+            cc: Vector = self.center - obj.center
+            v: Vector = self.move_vector
+            r: float = obj.shape.radius + self._shape.radius
+            b = v * cc
+            a = (v * v)
+            c = (cc * cc - r * r)
+            d = b * b - c * a
+            GameObject.log.debug("Calculated c={}, v={}, r={}, d={}".format(cc.coords, v.coords, r, d))
+            if d > EPSILON:
+                d_sqrt = sqrt(d)
+                roots = (-b - d_sqrt) / a, (-b + d_sqrt) / a
+                GameObject.log.debug("Found roots={}; sqrt(d)={} a={} b={} c={}".format(roots, d_sqrt, a, b, c))
+                if roots[1] > EPSILON:
+                    return min(roots[0], 1)
+        return 1.0
 
     def draw_shape_on(self, main_frame: Frame, center: Point):
         topleft = (int(center.x - self.width / 2), int(center.y - self.height / 2))
-        GameObject.log.debug("Adding texture in {}".format(topleft))
-        main_frame.display(self._shape.get_shape(), topleft)
+        GameObject.log.debug("Adding shape for {} in {}".format(self, topleft))
+        main_frame.display(self._shape.shape, topleft)
 
     @property
     def width(self):
@@ -62,7 +106,7 @@ class GameObject(CommonObject):
 
     @property
     def move_vector(self):
-        return self._m.move_vector
+        return self._m.get_time_offset()
 
     @move_vector.setter
     def move_vector(self, value: Vector):
@@ -71,3 +115,7 @@ class GameObject(CommonObject):
     @property
     def is_movable(self):
         return self._m.is_movable
+
+    @property
+    def shape(self):
+        return self._shape

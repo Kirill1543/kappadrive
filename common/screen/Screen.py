@@ -5,7 +5,7 @@ from kappa.core.geom.Point import Point
 from kappa.logger.Logger import Logger
 from ..camera.Camera import Camera
 from ..map.BoxedMap import BoxedMap
-from ...Settings import Settings, MAX_OBJECT_RADIUS_IN_BOXES
+from ...Settings import Settings, NEAR_OBJECTS_DRAW
 
 
 class Screen(object):
@@ -50,7 +50,7 @@ class Screen(object):
 
     def display(self):
         self.screen.display(self.background, (0, 0))
-        Screen.log.debug("Camera Position:{}:{}".format(self.camera.center.coords, (self.camera.x, self.camera.y)))
+        Screen.log.debug("Camera LeftTop Position:{}".format((self.camera.x, self.camera.y)))
         if self.mode == u'MENU':
             self.blit_menu()
         elif self.mode == u'MAP':
@@ -93,16 +93,15 @@ class Screen(object):
             pos_y += Settings.BOX_HEIGHT - offset_h
             offset_h = 0
 
-        for box_h in range(min(lt_box_id[1] - MAX_OBJECT_RADIUS_IN_BOXES, 0),
-                           max(rb_box_id[1] + MAX_OBJECT_RADIUS_IN_BOXES, self.map.box_height)):
-            for box_w in range(min(lt_box_id[0] - MAX_OBJECT_RADIUS_IN_BOXES, 0),
-                               max(rb_box_id[0] + MAX_OBJECT_RADIUS_IN_BOXES, self.map.box_width)):
+        for box_h in range(min(lt_box_id[1] - NEAR_OBJECTS_DRAW, 0),
+                           max(rb_box_id[1] + NEAR_OBJECTS_DRAW, self.map.box_height)):
+            for box_w in range(min(lt_box_id[0] - NEAR_OBJECTS_DRAW, 0),
+                               max(rb_box_id[0] + NEAR_OBJECTS_DRAW, self.map.box_width)):
                 self.blit_objects_queue += self.map.boxes[self.camera.center.z][box_h][box_w].object_list
 
     def blit_objects(self):
         Screen.log.debug("BoxedMap objects list:{}".format(self.map))
         for obj in self.blit_objects_queue:
-            Screen.log.debug("Object Position:{}".format(obj.center.coords))
             slicing = self.camera.topleft - Point(0, 0, 0)
             obj.draw_shape_on(self.screen, obj.center - slicing)
             if obj.is_movable:

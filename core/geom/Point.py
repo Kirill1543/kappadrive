@@ -31,3 +31,6 @@ class Point(Coordinates):
             raise NotImplementedError("Not supported to isub non-Vector from Point")
         self.coords = list(x - y for x, y in zip(self.coords, other.coords))
         return self
+
+    def to_int(self):
+        return Point(*(int(i) for i in self.coords))

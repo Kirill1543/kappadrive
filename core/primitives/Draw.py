@@ -5,8 +5,8 @@ from kappa.core.geom.Point import Point
 
 class Draw:
     @staticmethod
-    def circle(frame, color, pos, radius, width=0):
-        pygame.draw.circle(frame.surface, color, pos, radius, width)
+    def circle(frame, color, pos: Point, radius, width=0):
+        pygame.draw.circle(frame.surface, color, pos.to_int().coords[:2], radius, width)
 
     @staticmethod
     def rect(frame, color, topleft, size, width=0):
@@ -14,4 +14,4 @@ class Draw:
 
     @staticmethod
     def line(frame, color, start: Point, end: Point, width=1):
-        pygame.draw.line(frame.surface, color, start.coords[:2], end.coords[:2], width)
+        pygame.draw.line(frame.surface, color, start.to_int().coords[:2], end.to_int().coords[:2], width)

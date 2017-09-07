@@ -1,18 +1,21 @@
+import random
+
 from kappa.common.object.GameObject import GameObject
-from kappa.core.Color import BLACK, WHITE
+from kappa.core.Color import WHITE, RED
+from kappa.core.geom import intersection_circle_with_circle, Circle, EPSILON
 from kappa.core.geom.Point import Point
 from kappa.core.primitives.Draw import Draw
 from kappa.logger.Logger import Logger
 from ..map.Box import Box
-from ...Settings import Settings, MAX_OBJECT_RADIUS_IN_BOXES
+from ...Settings import Settings, NEAR_OBJECTS_MOVE
 from ...core.frame.Frame import Frame
-import random
 
 
 class BoxedMap:
     log = Logger(__name__).get()
 
     def __init__(self, width, height, levels=1):
+        self.time = -1
         self.width = width
         self.height = height
         self.levels = levels
@@ -20,6 +23,15 @@ class BoxedMap:
         self._obj_draw_queue = None
         self._display_frame = None
         self._background_textures = None
+
+    def __str__(self):
+        out = ""
+        for z, row1 in enumerate(self._boxes):
+            for y, row2 in enumerate(row1):
+                for x, val in enumerate(row2):
+                    if val.object_list:
+                        out += '({}:{}:{})-{}'.format(x, y, z, val.object_list)
+        return out
 
     @property
     def box_width(self):
@@ -85,7 +97,7 @@ class BoxedMap:
 
     def _draw_objects(self):
         for obj in self._obj_draw_queue:
-            obj.get_shape()
+            pass
 
     def capture(self, x, y, w, h, l=0):
         self._obj_draw_queue = []
@@ -98,23 +110,73 @@ class BoxedMap:
         return (max(input_boxes[0][0] - delta, 0), max(input_boxes[0][1] - delta, 0)), (
             min(input_boxes[1][0] + delta, self.box_width - 1), min(input_boxes[1][1] + delta, self.box_height - 1))
 
-    def draw_lines(self, frame, obj, slicing):
+    def get_near_obj_list(self, obj: GameObject):
         curr_box = int(obj.center.x) // Settings.BOX_WIDTH, int(obj.center.y) // Settings.BOX_HEIGHT
-        boxes_delta = 2 * MAX_OBJECT_RADIUS_IN_BOXES
-        lt, rb = self.expand_boxes((curr_box, curr_box), boxes_delta)
-        BoxedMap.log.debug("Drawing Connections for {}:{} in {}".format(obj, curr_box, (lt, rb)))
+        lt, rb = self.expand_boxes((curr_box, curr_box), NEAR_OBJECTS_MOVE)
+        objects = []
         for box_h in range(lt[1], rb[1] + 1):
             for box_w in range(lt[0], rb[0] + 1):
-                for end_object in self._boxes[0][box_h][box_w].object_list:
-                    BoxedMap.log.debug(
-                        "Drawing line between {} and {}".format(obj.center.coords, end_object.center.coords))
-                    Draw.line(frame, WHITE, obj.center - slicing, end_object.center - slicing, 1)
+                for o in self._boxes[0][box_h][box_w].object_list:
+                    if not o == obj:
+                        objects.append(o)
+        return objects
+
+    def draw_lines(self, frame, obj, slicing):
+        obj_list = self.get_near_obj_list(obj)
+        for end_object in obj_list:
+            BoxedMap.log.debug(
+                "Drawing line between {} and {}".format(obj.center.coords, end_object.center.coords))
+            Draw.line(frame, WHITE, obj.center - slicing, end_object.center - slicing, 1)
+            if obj.intersect(end_object):
+                Draw.line(frame, RED, obj.center - slicing, end_object.center - slicing, 1)
+            Draw.circle(frame, WHITE, end_object.center - slicing, obj.shape.radius + end_object.shape.radius, 1)
+            for end_object2 in obj_list:
+                if not end_object == end_object2 and end_object.shape.is_circle and end_object2.shape.is_circle:
+                    for c in intersection_circle_with_circle(
+                            Circle(end_object.center, end_object.shape.radius + obj.shape.radius),
+                            Circle(end_object2.center, end_object2.shape.radius + obj.shape.radius)):
+                        BoxedMap.log.debug("Drawing circle for root={}".format(c))
+                        Draw.circle(frame, RED, c - slicing, 5, 1)
 
     def try_move(self, obj: GameObject):
-        if obj.is_movable and self.point_is_inside(obj.center + obj.move_vector):
-            obj.move()
+        if obj.is_movable and self.point_is_inside(obj.get_time_position()):
+            near_objects = self.get_near_obj_list(obj)
+            BoxedMap.log.debug("Trying to move {}. Found near object list:{}".format(obj, near_objects))
+            vector = obj.move_vector
+            if not vector.is_null():
+                t = 1
+                while t > EPSILON:
+                    BoxedMap.log.debug("Default vector={}".format(vector))
+                    t_1 = 1
+                    found_object = None
+                    for near_object in near_objects:
+                        t_i = obj.move_time_to(near_object)
+                        new_vector = t_i * vector
+                        if abs(vector) > abs(new_vector):
+                            vector = new_vector
+                            t_1 = t_i
+                            found_object = near_object
+                            BoxedMap.log.debug("Vector updated with {} to {}".format(near_object, vector))
+                    t -= t_1
+                    obj.move_offset(vector)
+                    if t < EPSILON:
+                        break
+                    intersections = []
+                    for near_object in near_objects:
+                        if not found_object == near_object and found_object.shape.is_circle and near_object.shape.is_circle:
+                            for c in intersection_circle_with_circle(
+                                    Circle(found_object.center, found_object.shape.radius + obj.shape.radius),
+                                    Circle(near_object.center, near_object.shape.radius + obj.shape.radius)):
+                                intersections += c
+                    BoxedMap.log.debug("Found intersections:{}".format(intersections))
+                    if not intersections:
+                        t = 0
+                    else:
+                        pass
 
     def update(self):
+        self.time += 1
+        BoxedMap.log.debug("Time:{}".format(self.time))
         move_list = []
         for row in self._boxes[0]:
             for box in row:
@@ -133,12 +195,3 @@ class BoxedMap:
     @boxes.setter
     def boxes(self, value):
         self._boxes = value
-
-    def __str__(self):
-        out = ""
-        for z, row1 in enumerate(self._boxes):
-            for y, row2 in enumerate(row1):
-                for x, val in enumerate(row2):
-                    if val.object_list:
-                        out += '({}:{}:{})-{}'.format(x, y, z, val.object_list)
-        return out

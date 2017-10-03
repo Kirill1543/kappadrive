@@ -1,35 +1,37 @@
 import pygame
 
-from kappa.core.frame.Frame import Frame
-from kappa.core.geom.Point import Point
-from kappa.logger.Logger import Logger
+from ...core.frame.Frame import Frame
+from ...core.geom.Point import Point
+from ...logger.Logger import Logger
 from ..camera.Camera import Camera
 from ..map.BoxedMap import BoxedMap
-from ...Settings import Settings, NEAR_OBJECTS_DRAW
+from ...Settings import NEAR_OBJECTS_DRAW, SCREEN_DEFAULT_WIDTH, SCREEN_DEFAULT_HEIGHT, BACKGROUND_DEFAULT_COLOR, \
+    BACKGROUND_TEXTURE_WIDTH, BACKGROUND_TEXTURE_HEIGHT, BACKGROUND_TEXTURE_SOURCE_WIDTH, \
+    BACKGROUND_TEXTURE_SOURCE_HEIGHT, BOX_WIDTH, BOX_HEIGHT, CAMERA_SCREEN_POSITION_Y, CAMERA_SCREEN_POSITION_X
 
 
 class Screen(object):
     log = Logger(__name__).get()
 
-    def __init__(self, w=Settings.SCREEN_DEFAULT_WIDTH, h=Settings.SCREEN_DEFAULT_HEIGHT):
+    def __init__(self, w=SCREEN_DEFAULT_WIDTH, h=SCREEN_DEFAULT_HEIGHT):
         self.mode = u'MENU'
         self.screen = Frame.set_mode((w, h))
         self.background = Frame.by_surface(pygame.Surface(self.screen.get_size()).convert())
-        self.set_background_color(Settings.BACKGROUND_DEFAULT_COLOR)
+        self.set_background_color(BACKGROUND_DEFAULT_COLOR)
         self.background_textures = []
 
         self.camera: Camera = None
         self.map: BoxedMap = None
         self.blit_objects_queue: list = None
 
-    def load_textures(self, fullname, w=Settings.BACKGROUND_TEXTURE_WIDTH, h=Settings.BACKGROUND_TEXTURE_HEIGHT):
+    def load_textures(self, fullname, w=BACKGROUND_TEXTURE_WIDTH, h=BACKGROUND_TEXTURE_HEIGHT):
         image = pygame.image.load(fullname)
         if image.get_alpha is None:
             image = image.convert()
         else:
             image = image.convert_alpha()
-        s_w = Settings.BACKGROUND_TEXTURE_SOURCE_WIDTH
-        s_h = Settings.BACKGROUND_TEXTURE_SOURCE_HEIGHT
+        s_w = BACKGROUND_TEXTURE_SOURCE_WIDTH
+        s_h = BACKGROUND_TEXTURE_SOURCE_HEIGHT
         for j in range(0, 1):
             for i in range(0, 2):
                 # print i, j
@@ -57,7 +59,7 @@ class Screen(object):
             self.blit_map()
 
     @staticmethod
-    def get_box_id_by_coords(x, y, w=Settings.BOX_WIDTH, h=Settings.BOX_HEIGHT):
+    def get_box_id_by_coords(x, y, w=BOX_WIDTH, h=BOX_HEIGHT):
         return x // w, y // h
 
     def get_box(self, x, y, l=0):
@@ -74,23 +76,23 @@ class Screen(object):
     def blit_background(self):
         lt_box_id, rb_box_id = self.get_boxes_by_camera()
         Screen.log.debug("Selected draw boxes:{}-{}".format(lt_box_id, rb_box_id))
-        offset_h = max(int(self.camera.y), 0) % Settings.BOX_HEIGHT
-        pos_y = Settings.CAMERA_SCREEN_POSITION_Y - min(self.camera.y, 0)
+        offset_h = max(int(self.camera.y), 0) % BOX_HEIGHT
+        pos_y = CAMERA_SCREEN_POSITION_Y - min(self.camera.y, 0)
         for box_h in range(lt_box_id[1], rb_box_id[1] + 1):
-            pos_x = Settings.CAMERA_SCREEN_POSITION_X - min(self.camera.x, 0)
-            offset_w = max(int(self.camera.x), 0) % Settings.BOX_WIDTH
+            pos_x = CAMERA_SCREEN_POSITION_X - min(self.camera.x, 0)
+            offset_w = max(int(self.camera.x), 0) % BOX_WIDTH
 
             for box_w in range(lt_box_id[0], rb_box_id[0] + 1):
                 img_lt_corner = (offset_w, offset_h)
-                img_size = (Settings.BOX_WIDTH - offset_w, Settings.BOX_HEIGHT - offset_h)
+                img_size = (BOX_WIDTH - offset_w, BOX_HEIGHT - offset_h)
                 curr_box = self.map.boxes[self.camera.center.z][box_h][box_w]
                 img_to_blit = curr_box.build_background(self.background_textures)
                 self.screen.display(img_to_blit.subframe(*img_lt_corner, *img_size), (pos_x, pos_y))
 
-                pos_x += Settings.BOX_WIDTH - offset_w
+                pos_x += BOX_WIDTH - offset_w
                 offset_w = 0
 
-            pos_y += Settings.BOX_HEIGHT - offset_h
+            pos_y += BOX_HEIGHT - offset_h
             offset_h = 0
 
         for box_h in range(min(lt_box_id[1] - NEAR_OBJECTS_DRAW, 0),

@@ -1,5 +1,5 @@
-from kappa.core.geom.Point import Point
-from ...Settings import Settings
+from ...Settings import BOX_WIDTH, BOX_HEIGHT
+from ...core.geom.Point import Point
 
 
 class CommonObject(object):
@@ -8,7 +8,7 @@ class CommonObject(object):
         self.texture = texture
 
     def center_in_box(self, i, j, l):
-        return self.center.z == l and self.center.x / Settings.BOX_WIDTH == i and self.center.y / Settings.BOX_HEIGHT == j
+        return self.center.z == l and self.center.x / BOX_WIDTH == i and self.center.y / BOX_HEIGHT == j
 
     def center_on_coords(self, x, y):
         self.center.x = x

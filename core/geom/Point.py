@@ -1,5 +1,4 @@
-from kappa.core.geom.Coordinates import Coordinates
-from kappa.core.geom.Vector import Vector
+from . import Coordinates, Vector
 
 
 class Point(Coordinates):

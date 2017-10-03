@@ -1,12 +1,12 @@
 from math import sqrt
 
-from kappa.common.object.MovingStrategy import MovingStrategy
-from kappa.common.object.Shape import Shape
-from kappa.core.frame.Frame import Frame
-from kappa.core.geom import EPSILON
-from kappa.core.geom import Point
-from kappa.core.geom import Vector
-from kappa.logger.Logger import Logger
+from ...common.object.MovingStrategy import MovingStrategy
+from ...common.object.Shape import Shape
+from ...core.frame.Frame import Frame
+from ...core.geom import EPSILON
+from ...core.geom import Point
+from ...core.geom import Vector
+from ...logger.Logger import Logger
 from .CommonObject import CommonObject
 
 

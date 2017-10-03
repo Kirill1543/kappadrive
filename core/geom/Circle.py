@@ -1,6 +1,6 @@
 from math import cos, sin, pi
 
-from kappa.core.geom import Point, Angle, Vector
+from . import Point, Angle, Vector
 
 
 class Circle:

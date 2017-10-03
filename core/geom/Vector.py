@@ -1,11 +1,9 @@
 from math import acos
 
-from kappa.core.geom.Coordinates import Coordinates
-from . import EPSILON
+from . import EPSILON, Coordinates
 
 
 class Vector(Coordinates):
-
     def __init__(self, *args):
         super().__init__(*args)
 
@@ -63,5 +61,6 @@ class Vector(Coordinates):
             scale = 1 / mul
             return self * scale
         return self
+
 
 Vector.NULL_VECTOR = Vector(0.0, 0.0)

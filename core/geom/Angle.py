@@ -1,6 +1,6 @@
 from math import pi
 
-from kappa.core.geom import EPSILON
+from . import EPSILON
 
 
 class Angle:

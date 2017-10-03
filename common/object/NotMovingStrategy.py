@@ -1,4 +1,4 @@
-from kappa.common.object.MovingStrategy import MovingStrategy
+from ...common.object.MovingStrategy import MovingStrategy
 
 
 class NotMovingStrategy(MovingStrategy):

@@ -1,5 +1,4 @@
-from kappa.core.geom import Point
-from kappa.core.geom import Vector
+from . import Point, Vector
 
 
 class Line:

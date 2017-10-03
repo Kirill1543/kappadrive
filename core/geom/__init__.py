@@ -6,11 +6,11 @@ from kappa.logger.Logger import Logger
 
 EPSILON = 0.000001
 
+from .Coordinates import Coordinates
 from .Vector import Vector
 from .Angle import Angle
 from .Circle import Circle
 from .Point import Point
-from .Coordinates import Coordinates
 from .Line import Line
 
 __all__ = ["Vector", "Circle", "Point", "Coordinates", "Line", "Angle", "O"]
@@ -21,7 +21,9 @@ log = Logger(__name__).get()
 
 
 def intersection_line_with_circle(line: Line, circle: Circle) -> list:
-    log.debug("Calculating Line(a={},b={},c={}) and Circle(c={},r={}) Intersection".format(line.a, line.b, line.c, circle.center, circle.radius))
+    log.debug("Calculating Line(a={},b={},c={}) and Circle(c={},r={}) Intersection".format(line.a, line.b, line.c,
+                                                                                           circle.center,
+                                                                                           circle.radius))
     l: Line = copy(line).move(O - circle.center)
     vv: float = l.a ** 2 + l.b ** 2
     c_vv: float = l.c / vv
@@ -45,7 +47,8 @@ def intersection_line_with_circle(line: Line, circle: Circle) -> list:
 
 
 def intersection_circle_with_circle(c1: Circle, c2: Circle) -> list:
-    log.debug("Calculating Circle(c={},r={}) and Circle(c={},r={}) Intersection".format(c1.center, c1.radius, c2.center, c2.radius))
+    log.debug("Calculating Circle(c={},r={}) and Circle(c={},r={}) Intersection".format(c1.center, c1.radius, c2.center,
+                                                                                        c2.radius))
     c0: Point = c2.center - c1.center
     c: Circle = Circle(O, c1.radius)
     l: Line = Line(a=-2 * c0.x, b=-2 * c0.y, c=c0.x ** 2 + c0.y ** 2 + c1.radius ** 2 - c2.radius ** 2)

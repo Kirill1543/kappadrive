@@ -1,6 +1,6 @@
 import pygame
 
-from kappa.core.geom.Point import Point
+from ..geom import Point
 
 
 class Draw:

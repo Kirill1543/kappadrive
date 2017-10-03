@@ -1,6 +1,8 @@
 import logging
 
-from ..Settings import *
+import os
+
+from ..Settings import LOG_LEVEL, LOG_DIR, LOG_FILE
 
 
 class Logger:

@@ -1,4 +1,4 @@
-from ..frame.FrameFactory import FrameFactory
+from ...core.frame.Frame import Frame
 from ..frame.Transform import Transform
 import pygame
 
@@ -6,7 +6,7 @@ import pygame
 class Image:
     @staticmethod
     def load(path):
-        return FrameFactory.by_surface(pygame.image.load(path))
+        return Frame.by_surface(pygame.image.load(path))
 
     @staticmethod
     def load_packed(full_path, width, height, source_width, source_height):

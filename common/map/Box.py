@@ -1,6 +1,7 @@
-from kappa.core.Color import BLACK
-from kappa.core.primitives.Draw import Draw
-from ...Settings import Settings
+from ...core.Color import BLACK
+from ...core.primitives.Draw import Draw
+from ...Settings import BOX_HEIGHT, BOX_WIDTH, BOX_TEXTURE_HEIGHT, BOX_TEXTURE_WIDTH, BACKGROUND_TEXTURE_WIDTH, \
+    BACKGROUND_TEXTURE_HEIGHT
 from ...core.frame.Frame import Frame
 
 
@@ -10,19 +11,19 @@ class Box:
         self._background = background
 
     def build_background(self, textures):
-        frame = Frame(size=(Settings.BOX_WIDTH, Settings.BOX_HEIGHT))
-        for i in range(Settings.BOX_TEXTURE_HEIGHT):
-            for j in range(Settings.BOX_TEXTURE_WIDTH):
+        frame = Frame(size=(BOX_WIDTH, BOX_HEIGHT))
+        for i in range(BOX_TEXTURE_HEIGHT):
+            for j in range(BOX_TEXTURE_WIDTH):
                 frame.display(textures[self._background[i][j]],
-                              (j * Settings.BACKGROUND_TEXTURE_WIDTH, i * Settings.BACKGROUND_TEXTURE_HEIGHT))
-        Draw.rect(frame, BLACK, (0, 0), (Settings.BOX_WIDTH, Settings.BOX_HEIGHT), 1)
+                              (j * BACKGROUND_TEXTURE_WIDTH, i * BACKGROUND_TEXTURE_HEIGHT))
+        Draw.rect(frame, BLACK, (0, 0), (BOX_WIDTH, BOX_HEIGHT), 1)
         return frame
 
     def add_obj(self, obj):
         self._object_list.append(obj)
 
     @staticmethod
-    def get_id_by_coords(x, y, w=Settings.BOX_WIDTH, h=Settings.BOX_HEIGHT):
+    def get_id_by_coords(x, y, w=BOX_WIDTH, h=BOX_HEIGHT):
         return x // w, y // h
 
     @staticmethod

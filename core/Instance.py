@@ -3,9 +3,9 @@ import timeit
 import pygame
 from pygame.time import Clock
 
-from kappa.common.object.GameObject import GameObject
-from kappa.common.screen.Screen import Screen
-from kappa.logger.Logger import Logger
+from ..common.object.GameObject import GameObject
+from ..common.screen.Screen import Screen
+from ..logger.Logger import Logger
 
 
 class Instance:

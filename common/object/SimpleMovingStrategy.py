@@ -1,6 +1,6 @@
-from kappa.common.object.MovingStrategy import MovingStrategy
-from kappa.core.geom.Vector import Vector
-from kappa.logger.Logger import Logger
+from ...common.object.MovingStrategy import MovingStrategy
+from ...core.geom.Vector import Vector
+from ...logger.Logger import Logger
 
 
 class SimpleMovingStrategy(MovingStrategy):

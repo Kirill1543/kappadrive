@@ -1,4 +1,4 @@
-from ...Settings import Settings
+from ...Settings import CAMERA_DEFAULT_WIDTH, CAMERA_DEFAULT_HEIGHT
 from ..object.RectShape import RectShape
 from ..object.GameObject import GameObject
 from ..object.SimpleMovingStrategy import SimpleMovingStrategy
@@ -10,8 +10,8 @@ class Camera(GameObject):
         GameObject.__init__(self,
                             center,
                             None,
-                            RectShape(Settings.CAMERA_DEFAULT_WIDTH,
-                                      Settings.CAMERA_DEFAULT_HEIGHT,
+                            RectShape(CAMERA_DEFAULT_WIDTH,
+                                      CAMERA_DEFAULT_HEIGHT,
                                       ),
                             SimpleMovingStrategy()
                             )

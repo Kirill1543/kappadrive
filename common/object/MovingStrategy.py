@@ -1,4 +1,4 @@
-from kappa.core.geom.Vector import Vector
+from ...core.geom.Vector import Vector
 
 
 class MovingStrategy:

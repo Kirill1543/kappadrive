@@ -1,15 +1,13 @@
 import random
 
+from ..map.Box import Box
 from ..object.GameObject import GameObject
-from ...core.Color import WHITE, RED
+from ...Settings import NEAR_OBJECTS_MOVE, BOX_WIDTH, BOX_HEIGHT, BOX_TEXTURE_WIDTH, BOX_TEXTURE_HEIGHT
+from ...core.Color import WHITE, RED, BLUE, GREEN
 from ...core.geom import intersection_circle_with_circle, Circle, EPSILON
 from ...core.geom.Point import Point
 from ...core.primitives.Draw import Draw
 from ...logger.Logger import Logger
-from ..map.Box import Box
-from ...Settings import NEAR_OBJECTS_MOVE, BOX_WIDTH, BOX_HEIGHT, BOX_TEXTURE_WIDTH, BOX_TEXTURE_HEIGHT, \
-    CAMERA_SCREEN_POSITION_Y, CAMERA_SCREEN_POSITION_X
-from ...core.frame.Frame import Frame
 
 
 class BoxedMap:
@@ -72,41 +70,6 @@ class BoxedMap:
         obj.center = pos
         self.get_box_by_point(pos).add_obj(obj)
 
-    def _capture_background(self, x, y, w, h, l=0):
-        lt_box_id, rb_box_id = Box.get_id_by_rect(x, y, w, h)
-
-        offset_h = max(y, 0) % BOX_HEIGHT
-        pos_y = CAMERA_SCREEN_POSITION_Y - min(y, 0)
-        for box_h in range(lt_box_id[1], rb_box_id[1] + 1):
-            pos_x = CAMERA_SCREEN_POSITION_X - min(x, 0)
-            offset_w = max(x, 0) % BOX_WIDTH
-
-            for box_w in range(lt_box_id[0], rb_box_id[0] + 1):
-                img_lt_corner = (offset_w, offset_h)
-                img_size = (BOX_WIDTH - offset_w, BOX_HEIGHT - offset_h)
-                curr_box = self._boxes[l][box_h][box_w]
-                display_img = curr_box.build_background(self._background_textures)
-                self._display_frame.display(display_img.subframe(img_lt_corner, img_size), (pos_x, pos_y))
-
-                self._obj_draw_queue += curr_box.object_list
-
-                pos_x += BOX_WIDTH - offset_w
-                offset_w = 0
-
-            pos_y += BOX_HEIGHT - offset_h
-            offset_h = 0
-
-    def _draw_objects(self):
-        for obj in self._obj_draw_queue:
-            pass
-
-    def capture(self, x, y, w, h, l=0):
-        self._obj_draw_queue = []
-        self._display_frame = Frame((w, h))
-        self._capture_background(x, y, w, h, l)
-        self._draw_objects()
-        self._obj_draw_queue = None
-
     def expand_boxes(self, input_boxes, delta):
         return (max(input_boxes[0][0] - delta, 0), max(input_boxes[0][1] - delta, 0)), (
             min(input_boxes[1][0] + delta, self.box_width - 1), min(input_boxes[1][1] + delta, self.box_height - 1))
@@ -138,6 +101,13 @@ class BoxedMap:
                             Circle(end_object2.center, end_object2.shape.radius + obj.shape.radius)):
                         BoxedMap.log.debug("Drawing circle for root={}".format(c))
                         Draw.circle(frame, RED, c - slicing, 5, 1)
+            points = Circle(end_object.center, end_object.shape.radius + obj.shape.radius).get_tangent_points(
+                obj.move_vector)
+            points.sort(key=lambda x: abs(x - obj.center))
+            BoxedMap.log.debug("Drawing circle for closest tangent point={}".format(points[0]))
+            Draw.circle(frame, BLUE, points[0] - slicing, 5, 1)
+            BoxedMap.log.debug("Drawing circle for farest tangent point={}".format(points[1]))
+            Draw.circle(frame, GREEN, points[1] - slicing, 5, 1)
 
     def try_move(self, obj: GameObject):
         if obj.is_movable and self.point_is_inside(obj.get_time_position()):
@@ -159,16 +129,30 @@ class BoxedMap:
                             found_object = near_object
                             BoxedMap.log.debug("Vector updated with {} to {}".format(near_object, vector))
                     t -= t_1
+                    BoxedMap.log.debug("Moving forward with {} to {}; time = {}".format(vector, found_object, t_1))
                     obj.move_offset(vector)
                     if t < EPSILON:
                         break
                     intersections = []
+                    tangent_points = []
+                    closet_tangent_points = []
                     for near_object in near_objects:
                         if not found_object == near_object and found_object.shape.is_circle and near_object.shape.is_circle:
                             for c in intersection_circle_with_circle(
                                     Circle(found_object.center, found_object.shape.radius + obj.shape.radius),
                                     Circle(near_object.center, near_object.shape.radius + obj.shape.radius)):
-                                intersections += c
+                                intersections += [c]
+                    points = Circle(found_object.center,
+                                    found_object.shape.radius + obj.shape.radius).get_tangent_points(
+                        obj.move_vector)
+                    if abs(obj.center - points[0]) < abs(obj.center - points[1]):
+                        closet_tangent_points += points[:1]
+                    else:
+                        closet_tangent_points += points[1:]
+                    tangent_points += points
+
+                    BoxedMap.log.debug("Found tangent points: {}".format(tangent_points))
+                    BoxedMap.log.debug("Found closest tangent point: {}".format(closet_tangent_points))
                     BoxedMap.log.debug("Found intersections:{}".format(intersections))
                     if not intersections:
                         t = 0.0

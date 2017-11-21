@@ -4,7 +4,7 @@ from ...core.geom.Point import Point
 
 class CommonObject(object):
     def __init__(self, center: Point, texture):
-        self.center: Point = center
+        self.center = center
         self.texture = texture
 
     def center_in_box(self, i, j, l):
@@ -16,3 +16,6 @@ class CommonObject(object):
 
     def center_on(self, c_obj):
         self.center_on_coords(c_obj.center.x, c_obj.center.y)
+
+    def move_to(self, point: Point):
+        self.center = point

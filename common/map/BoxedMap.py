@@ -4,8 +4,7 @@ from ..map.Box import Box
 from ..object.GameObject import GameObject
 from ...Settings import NEAR_OBJECTS_MOVE, BOX_WIDTH, BOX_HEIGHT, BOX_TEXTURE_WIDTH, BOX_TEXTURE_HEIGHT
 from ...core.Color import WHITE, RED, BLUE, GREEN
-from ...core.geom import intersection_circle_with_circle, Circle, EPSILON
-from ...core.geom.Point import Point
+from ...core.geom import intersection_circle_with_circle, Circle, EPSILON, Point, Angle
 from ...core.primitives.Draw import Draw
 from ...logger.Logger import Logger
 
@@ -114,6 +113,7 @@ class BoxedMap:
             near_objects = self.get_near_obj_list(obj)
             BoxedMap.log.debug("Trying to move {}. Found near object list:{}".format(obj, near_objects))
             vector = obj.move_vector
+            is_stuck_point = False
             if not vector.is_null():
                 t = 1.0
                 while t > EPSILON:
@@ -121,43 +121,99 @@ class BoxedMap:
                     t_1 = 1.0
                     found_object = None
                     for near_object in near_objects:
+                        BoxedMap.log.debug("Parsing near object {}".format(near_object))
                         t_i = obj.move_time_to(near_object)
-                        new_vector = t_i * vector
-                        if abs(vector) > abs(new_vector):
+                        new_vector = t_i * obj.move_vector
+                        BoxedMap.log.debug("Time to={}, vector={}".format(t_i, new_vector))
+                        abs_vector = abs(vector)
+                        abs_new_vector = abs(new_vector)
+                        BoxedMap.log.debug(
+                            "Minimum vector length={}, current vector length={}".format(abs_vector, abs_new_vector))
+                        if abs_vector > abs_new_vector:
+                            is_stuck_point = False
                             vector = new_vector
                             t_1 = t_i
                             found_object = near_object
-                            BoxedMap.log.debug("Vector updated with {} to {}".format(near_object, vector))
-                    t -= t_1
+                            BoxedMap.log.debug(
+                                "Vector updated with {} to {}. Stuck flag is set to false".format(near_object, vector))
+                        elif abs(abs_vector - abs_new_vector) < EPSILON:
+                            is_stuck_point = True
+                            BoxedMap.log.debug("Found duplicate, setting as stuck point")
+                    if t_1 > EPSILON:
+                        t -= t_1
                     BoxedMap.log.debug("Moving forward with {} to {}; time = {}".format(vector, found_object, t_1))
                     obj.move_offset(vector)
                     if t < EPSILON:
+                        BoxedMap.log.debug("No more time has left for calculations")
+                        break
+                    if is_stuck_point:
+                        BoxedMap.log.debug("End point is marked as stuck")
                         break
                     intersections = []
-                    tangent_points = []
-                    closet_tangent_points = []
+                    found_object_circle = Circle(found_object.center, found_object.shape.radius + obj.shape.radius)
                     for near_object in near_objects:
                         if not found_object == near_object and found_object.shape.is_circle and near_object.shape.is_circle:
                             for c in intersection_circle_with_circle(
-                                    Circle(found_object.center, found_object.shape.radius + obj.shape.radius),
+                                    found_object_circle,
                                     Circle(near_object.center, near_object.shape.radius + obj.shape.radius)):
                                 intersections += [c]
-                    points = Circle(found_object.center,
-                                    found_object.shape.radius + obj.shape.radius).get_tangent_points(
+                    tangent_points = found_object_circle.get_tangent_points(
                         obj.move_vector)
-                    if abs(obj.center - points[0]) < abs(obj.center - points[1]):
-                        closet_tangent_points += points[:1]
+                    if abs(obj.center - tangent_points[0]) < abs(obj.center - tangent_points[1]):
+                        closest_tangent_point = tangent_points[0]
                     else:
-                        closet_tangent_points += points[1:]
-                    tangent_points += points
+                        closest_tangent_point = tangent_points[1]
 
                     BoxedMap.log.debug("Found tangent points: {}".format(tangent_points))
-                    BoxedMap.log.debug("Found closest tangent point: {}".format(closet_tangent_points))
+                    BoxedMap.log.debug("Found closest tangent point: {}".format(closest_tangent_point))
                     BoxedMap.log.debug("Found intersections:{}".format(intersections))
+
+                    BoxedMap.log.debug("Casting found points to angles...")
+
+                    intersection_angles = [found_object_circle.get_angle(i) for i in intersections]
+                    tangent_angle = found_object_circle.get_angle(closest_tangent_point)
+                    current_angle = found_object_circle.get_angle(obj.center)
+
+                    BoxedMap.log.debug("Calculated angles for closest tangent point: {}".format(tangent_angle))
+                    BoxedMap.log.debug("Calculated angles for intersections:{}".format(intersection_angles))
+                    BoxedMap.log.debug("Calculated angle for current point: {}".format(current_angle))
+
+                    expected_angle = current_angle + Angle(obj.speed * t / found_object_circle.radius)
+                    BoxedMap.log.debug("Expected Angle for speed={}, t={}, radius={} is: {}".format(obj.speed, t,
+                                                                                                    found_object_circle.radius,
+                                                                                                    expected_angle))
+                    BoxedMap.log.debug(
+                        "Filtering angles between current {} and tangent {}".format(current_angle, tangent_angle))
+                    filtered_angles = []
+                    for a in intersection_angles + [expected_angle]:
+                        if a.is_between(current_angle, tangent_angle):
+                            filtered_angles.append(a)
+                    BoxedMap.log.debug("Filtered: {}".format(filtered_angles))
+
+                    t_2 = t
+                    selected_angle = expected_angle
+
+                    for angle in filtered_angles + [tangent_angle]:
+                        delta_angle = abs(angle.radians - current_angle.radians)
+                        time = delta_angle * found_object_circle.radius / obj.speed
+                        BoxedMap.log.debug("Counted time for {}: {}".format(angle, time))
+                        if t_2 > time:
+                            t_2 = time
+                            selected_angle = angle
+
+                    BoxedMap.log.debug("Found minimum {} for t={}".format(selected_angle, t_2))
+
+                    if t_2 > EPSILON:
+                        t -= t_2
+                    final_point = found_object_circle(t_2, obj.speed)
+                    BoxedMap.log.debug("Final point = {}".format(final_point))
+                    obj.move_to(final_point)
+
                     if not intersections:
                         t = 0.0
                     else:
                         pass
+                BoxedMap.log.debug("Ending moving flow")
 
     def update(self):
         self.time += 1

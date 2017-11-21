@@ -15,7 +15,7 @@ class GameObject(CommonObject):
 
     def __init__(self, center: Point, texture, shape: Shape, moving_style):
         CommonObject.__init__(self, center, texture)
-        self._shape: Shape = shape
+        self._shape = shape
         self._m: MovingStrategy = moving_style
 
     def __str__(self) -> str:
@@ -119,3 +119,7 @@ class GameObject(CommonObject):
     @property
     def shape(self):
         return self._shape
+
+    @property
+    def speed(self):
+        return self._m.speed

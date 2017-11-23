@@ -1,13 +1,13 @@
 import unittest
-from .core import suite_core
+from .geom import suite_geom
 
-__all__ = ["suite_all"]
+__all__ = ["suite_core"]
 
 
-def suite_all():
+def suite_core():
     loader: unittest.TestLoader = unittest.TestLoader()
 
     suite: unittest.TestSuite = unittest.TestSuite()
-    suite.addTests(loader.loadTestsFromModule(suite_core()))
+    suite.addTests(loader.loadTestsFromModule(suite_geom()))
 
     return suite

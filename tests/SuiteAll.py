@@ -1,13 +1,6 @@
 import unittest
-
-
-class MyTestCase(unittest.TestCase):
-    def test_something(self):
-        self.assertEqual(True, True)
-
-    def test_testing_bitbucket(self):
-        self.assertEqual(1 + 1, 2)
-
+from . import suite_all
 
 if __name__ == '__main__':
-    unittest.main()
+    runner = unittest.TextTestRunner(verbosity=3)
+    result = runner.run(suite_all())

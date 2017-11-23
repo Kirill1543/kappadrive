@@ -23,7 +23,6 @@ class Image:
 
         for j in range(0, count_height):
             for i in range(0, count_width):
-                # print i, j
                 loaded_images.append(Transform.copy_from(image, i * source_width, j * source_height, source_width, source_height, width, height))
 
         return loaded_images

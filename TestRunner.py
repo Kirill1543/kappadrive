@@ -4,7 +4,7 @@ try:
     import traceback
     import unittest
 
-    SCRIPT_DIR = os.path.dirname(os.path.realpath(os.getcwd()))
+    SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(__file__, '..')))
     print(SCRIPT_DIR)
     sys.path.insert(0, os.path.normpath(SCRIPT_DIR))
 

@@ -5,6 +5,7 @@ try:
     import unittest
 
     SCRIPT_DIR = os.path.dirname(os.path.realpath(os.getcwd()))
+    print(SCRIPT_DIR)
     sys.path.insert(0, os.path.normpath(SCRIPT_DIR))
 
     from kappa.tests.SuiteAll import SuiteAll

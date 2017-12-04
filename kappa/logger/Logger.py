@@ -9,8 +9,10 @@ class Logger:
     def __init__(self, name):
         logger = logging.getLogger(name)
         logger.setLevel(LOG_LEVEL)
+        self.log_dir = LOG_DIR
+        self.check_folder_exists()
         if not logger.handlers:
-            file_name = os.path.join(LOG_DIR, LOG_FILE)
+            file_name = os.path.join(self.log_dir, LOG_FILE)
             handler = logging.FileHandler(file_name, 'w')
             handler.setLevel(LOG_LEVEL)
             console_handler = logging.StreamHandler()
@@ -24,3 +26,7 @@ class Logger:
 
     def get(self):
         return self._logger
+
+    def check_folder_exists(self):
+        if not os.path.exists(self.log_dir):
+            os.makedirs(self.log_dir)

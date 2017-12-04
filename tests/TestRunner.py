@@ -21,11 +21,11 @@ try:
     print("This file directory only")
     print(os.path.dirname(full_path))
 
-    SCRIPT_DIR = os.path.join(os.path.dirname(full_path), '..', '..')
-    sys.path.insert(0, os.path.normpath(SCRIPT_DIR))
+    SCRIPT_DIR = os.path.join(os.path.dirname(full_path))
+    sys.path.insert(0, os.path.normpath(os.path.join(SCRIPT_DIR, '..')))
     print(sys.path)
 
-    from kappa.tests.SuiteAll import SuiteAll
+    from tests.SuiteAll import SuiteAll
 
 except ImportError as err:
     traceback.print_exc(file=sys.stdout)

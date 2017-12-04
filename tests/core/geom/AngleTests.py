@@ -1,6 +1,6 @@
 import unittest
 from math import pi
-from ....core.geom import Angle
+from kappa.core.geom.Angle import Angle
 
 
 class AngleTests(unittest.TestCase):

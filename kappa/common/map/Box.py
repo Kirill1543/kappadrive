@@ -1,7 +1,7 @@
 from ...core.Color import BLACK
 from ...core.primitives.Draw import Draw
 from ...Settings import BOX_HEIGHT, BOX_WIDTH, BOX_TEXTURE_HEIGHT, BOX_TEXTURE_WIDTH, BACKGROUND_TEXTURE_WIDTH, \
-    BACKGROUND_TEXTURE_HEIGHT
+    BACKGROUND_TEXTURE_HEIGHT, DRAW_DEBUG
 from ...core.frame.Frame import Frame
 
 
@@ -16,7 +16,8 @@ class Box:
             for j in range(BOX_TEXTURE_WIDTH):
                 frame.display(textures[self._background[i][j]],
                               (j * BACKGROUND_TEXTURE_WIDTH, i * BACKGROUND_TEXTURE_HEIGHT))
-        Draw.rect(frame, BLACK, (0, 0), (BOX_WIDTH, BOX_HEIGHT), 1)
+        if DRAW_DEBUG:
+            Draw.rect(frame, BLACK, (0, 0), (BOX_WIDTH, BOX_HEIGHT), 1)
         return frame
 
     def add_obj(self, obj):

@@ -12,6 +12,8 @@ LOG_DIR: str = os.path.join(SCRIPT_DIR, 'logs')
 LOG_FILE: str = 'log.log'
 LOG_LEVEL = logging.DEBUG
 
+DRAW_DEBUG: bool = False
+
 NEAR_OBJECTS_DRAW = 1
 NEAR_OBJECTS_MOVE = 1
 

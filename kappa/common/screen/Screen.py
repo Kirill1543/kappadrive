@@ -7,7 +7,8 @@ from ..camera.Camera import Camera
 from ..map.BoxedMap import BoxedMap
 from ...Settings import NEAR_OBJECTS_DRAW, SCREEN_DEFAULT_WIDTH, SCREEN_DEFAULT_HEIGHT, BACKGROUND_DEFAULT_COLOR, \
     BACKGROUND_TEXTURE_WIDTH, BACKGROUND_TEXTURE_HEIGHT, BACKGROUND_TEXTURE_SOURCE_WIDTH, \
-    BACKGROUND_TEXTURE_SOURCE_HEIGHT, BOX_WIDTH, BOX_HEIGHT, CAMERA_SCREEN_POSITION_Y, CAMERA_SCREEN_POSITION_X
+    BACKGROUND_TEXTURE_SOURCE_HEIGHT, BOX_WIDTH, BOX_HEIGHT, CAMERA_SCREEN_POSITION_Y, CAMERA_SCREEN_POSITION_X, \
+    DRAW_DEBUG
 
 
 class Screen(object):
@@ -106,7 +107,7 @@ class Screen(object):
         for obj in self.blit_objects_queue:
             slicing = self.camera.topleft - Point(0, 0, 0)
             obj.draw_shape_on(self.screen, obj.center - slicing)
-            if obj.is_movable:
+            if obj.is_movable and DRAW_DEBUG:
                 self.map.draw_lines(self.screen, obj, slicing)
 
     def blit_map(self):

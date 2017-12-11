@@ -108,6 +108,56 @@ class BoxedMap:
             BoxedMap.log.debug("Drawing circle for farest tangent point={}".format(points[1]))
             Draw.circle(frame, GREEN, points[1] - slicing, 5, 1)
 
+    def __find_closest_object(self, obj: GameObject) -> (bool, float):
+        BoxedMap.log.debug("Finding closest object for {}. Minimum time is set as 1.0.".format(obj))
+        is_stuck_point: bool = False
+        found: bool = False
+        minimum_time: float = 1.0
+        near_objects = self.get_near_obj_list(obj)
+
+        for near_object in near_objects:
+            time_i: float = obj.move_time_to(near_object)
+            if abs(time_i - minimum_time) <= EPSILON:
+                if found:
+                    BoxedMap.log.debug("Found duplicate. Setting flag is_stuck_point = True.")
+                    is_stuck_point = True
+
+            if time_i < minimum_time - EPSILON:
+                BoxedMap.log.debug(
+                    "Found closest object, setting minimum time as {}, setting is_stuck_point=false".format(time_i))
+                minimum_time = time_i
+                found = True
+                is_stuck_point = False
+
+        if minimum_time < EPSILON:
+            BoxedMap.log.debug("Minimum time={} is very small, correcting it to 0.".format(minimum_time))
+            minimum_time = 0.0
+
+        return is_stuck_point, minimum_time
+
+    def __try_move(self, obj: GameObject):
+        if not obj.is_movable:
+            BoxedMap.log.debug("Skipping moving iteration for {}: Not movable".format(obj))
+            return
+
+        if not self.point_is_inside(obj.get_time_position()):
+            BoxedMap.log.debug("Skipping moving iteration for {}: Destination point outside map borders".format(obj))
+            return
+
+        if obj.move_vector.is_null():
+            BoxedMap.log.debug("Skipping moving iteration for {}: Moving vector is null".format(obj))
+            return
+
+        BoxedMap.log.debug("Starting moving iteration for {}.".format(obj))
+        is_stuck, minimum_time = self.__find_closest_object(obj)
+
+        if is_stuck:
+            BoxedMap.log.debug("Having stuck point in {} time. Moving and ending iteration".format(minimum_time))
+            obj.move(minimum_time)
+            return
+
+        obj.move(minimum_time)
+
     def try_move(self, obj: GameObject):
         if obj.is_movable and self.point_is_inside(obj.get_time_position()):
             near_objects = self.get_near_obj_list(obj)
@@ -224,7 +274,7 @@ class BoxedMap:
                 for i, obj in enumerate(box.object_list):
                     move_list.append((obj, box, i))
         for obj, box, i in move_list:
-            self.try_move(obj)
+            self.__try_move(obj)
             if self.get_box_by_point(obj.center) != box:
                 box.object_list.pop(i)
                 self.add_obj(obj)

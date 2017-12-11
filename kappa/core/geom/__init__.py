@@ -2,15 +2,15 @@ from copy import copy
 
 from math import sqrt
 
-from kappa.logger.Logger import Logger
+from ...logger.Logger import Logger
 
 EPSILON = 0.000001
 
 from .Coordinates import Coordinates
 from .Vector import Vector
 from .Angle import Angle
-from .Circle import Circle
 from .Point import Point
+from .Circle import Circle
 from .Line import Line
 
 __all__ = ["Vector", "Circle", "Point", "Coordinates", "Line", "Angle", "O"]

@@ -9,8 +9,8 @@ class Draw:
         pygame.draw.circle(frame.surface, color, pos.to_int().coords[:2], radius, width)
 
     @staticmethod
-    def rect(frame, color, topleft, size, width=0):
-        pygame.draw.rect(frame.surface, color, pygame.Rect(topleft, size), width)
+    def rect(frame, color, top_left, size, width=0):
+        pygame.draw.rect(frame.surface, color, pygame.Rect(top_left, size), width)
 
     @staticmethod
     def line(frame, color, start: Point, end: Point, width=1):

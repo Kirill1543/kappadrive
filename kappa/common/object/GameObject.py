@@ -54,7 +54,9 @@ class GameObject(CommonObject):
         return self.intersect(obj, 1)
 
     def move_time_to(self, obj) -> float:
+        GameObject.log.debug("Calculating moving time from {} to {}".format(self, obj))
         if self.shape.is_circle and obj.shape.is_circle:
+            GameObject.log.debug("Both have Circle Shapes.")
             cc: Vector = self.center - obj.center
             v: Vector = self.move_vector
             r: float = obj.shape.radius + self._shape.radius
@@ -69,6 +71,8 @@ class GameObject(CommonObject):
                 GameObject.log.debug("Found roots={}; sqrt(d)={} a={} b={} c={}".format(roots, d_sqrt, a, b, c))
                 if roots[1] > EPSILON:
                     return min(roots[0], 1)
+        else:
+            GameObject.log.debug("Even 1 of them has not a Circle Shape, skipping...")
         return 1.0
 
     def draw_shape_on(self, main_frame: Frame, center: Point):
@@ -119,3 +123,7 @@ class GameObject(CommonObject):
     @property
     def shape(self):
         return self._shape
+
+    @property
+    def speed(self):
+        return self._m.speed

@@ -1,13 +1,9 @@
 import unittest
 
-
-class MyTestCase(unittest.TestCase):
-    def test_something(self):
-        self.assertEqual(True, True)
-
-    def test_testing_bitbucket(self):
-        self.assertEqual(1 + 1, 2)
+from .core.SuiteCore import SuiteCore
 
 
-if __name__ == '__main__':
-    unittest.main()
+class SuiteAll:
+    def __init__(self):
+        self.suite = unittest.TestSuite()
+        self.suite.addTests(SuiteCore().suite)

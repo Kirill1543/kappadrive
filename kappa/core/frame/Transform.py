@@ -1,6 +1,6 @@
 import pygame
 
-from ...core.frame.Frame import Frame
+from .Frame import Frame
 
 
 class Transform:

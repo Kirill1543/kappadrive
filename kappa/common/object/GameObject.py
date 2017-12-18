@@ -13,7 +13,7 @@ from ...logger.Logger import Logger
 class GameObject(CommonObject):
     log = Logger(__name__).get()
 
-    def __init__(self, center: Point, texture, shape: Shape, moving_strategy):
+    def __init__(self, center: Point, texture, shape: Shape, moving_strategy: MovingStrategy):
         CommonObject.__init__(self, center, texture)
         self.__shape: Shape = shape
         self.__m: MovingStrategy = moving_strategy
@@ -22,24 +22,26 @@ class GameObject(CommonObject):
         pass
 
     def start_move(self, direction):
+        GameObject.log.debug("Starting move {} with direction={}".format(self, direction))
         self.__m.change_move(direction, 1)
 
     def stop_move(self, direction):
+        GameObject.log.debug("Stopping move {} with direction={}".format(self, direction))
         self.__m.change_move(direction, -1)
 
     def move_offset(self, offset: Vector):
         self.center += offset
 
     def move(self, t=1):
-        self.center += self.__m.get_time_offset(t)
+        self.center += self.__m.get_time_vector(t)
 
     def get_time_position(self, t=1) -> Point:
-        return self.center + self.__m.get_time_offset(t)
+        return self.center + self.__m.get_time_vector(t)
 
     def intersect(self, obj: __name__, t=0) -> bool:
         if self.shape.is_circle and obj.shape.is_circle:
             c: Vector = obj.center - self.center
-            v: Vector = self.__m.get_time_offset(t)
+            v: Vector = self.__m.get_time_vector(t)
             r: float = obj.shape.radius + self.__shape.radius
             d = v * c - (c * c - r * r)
             GameObject.log.debug("Calculated c={}, v={}, r={}, d={}".format(c.coords, v.coords, r, d))
@@ -107,7 +109,7 @@ class GameObject(CommonObject):
 
     @property
     def move_vector(self):
-        return self.__m.get_time_offset()
+        return self.__m.get_time_vector()
 
     @move_vector.setter
     def move_vector(self, value: Vector):

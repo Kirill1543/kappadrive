@@ -51,16 +51,23 @@ class Vector(Coordinates):
     def is_null(self):
         return self == Vector.NULL_VECTOR
 
-    def angle(self, other):
+    def angle(self, other: __name__):
         if not (self.is_null() or other.is_null()):
             return acos(self * other / (abs(self) * abs(other)))
 
-    def normalize(self):
-        mul = abs(self)
-        if not self.is_null():
+    def copy(self) -> __name__:
+        vector = Vector()
+        for i in self.coords:
+            vector.coords.append(i)
+        return vector
+
+    def normalize(self) -> __name__:
+        vector = self.copy()
+        mul = abs(vector)
+        if not vector.is_null():
             scale = 1 / mul
-            return self * scale
-        return self
+            return vector * scale
+        return vector
 
 
 Vector.NULL_VECTOR = Vector(0.0, 0.0)

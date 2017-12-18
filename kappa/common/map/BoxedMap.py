@@ -113,7 +113,7 @@ class BoxedMap(Viewable):
             for box_w in range(lt_box_id[0], rb_box_id[0] + 1):
                 img_lt_corner = (offset_w, offset_h)
                 img_size = (BOX_WIDTH - offset_w, BOX_HEIGHT - offset_h)
-                curr_box = self.boxes[camera.center.z][box_h][box_w]
+                curr_box = self.boxes[int(camera.center.z)][box_h][box_w]
                 img_to_blit = curr_box.build_background(self.__background_textures)
                 frame.display(img_to_blit.subframe(*img_lt_corner, *img_size), (pos_x, pos_y))
 
@@ -127,7 +127,7 @@ class BoxedMap(Viewable):
                            max(rb_box_id[1] + NEAR_OBJECTS_DRAW, self.box_height)):
             for box_w in range(min(lt_box_id[0] - NEAR_OBJECTS_DRAW, 0),
                                max(rb_box_id[0] + NEAR_OBJECTS_DRAW, self.box_width)):
-                self.__display_obj_queue += self.boxes[camera.center.z][box_h][box_w].object_list
+                self.__display_obj_queue += self.boxes[int(camera.center.z)][box_h][box_w].object_list
 
     def __display_objects(self, camera: Camera, frame: Frame):
         BoxedMap.log.debug("BoxedMap objects list:{}".format(self))

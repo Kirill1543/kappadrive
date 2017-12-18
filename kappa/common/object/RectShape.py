@@ -7,11 +7,11 @@ from ...core.primitives.Draw import Draw
 class RectShape(Shape):
     def __init__(self, width, height, color=BLACK):
         super().__init__(color)
-        self._width = width
-        self._height = height
-        self._shape = self._create_shape()
+        self.__width = width
+        self.__height = height
+        self.__shape: Frame = self.__create_shape()
 
-    def _create_shape(self) -> Frame:
+    def __create_shape(self) -> Frame:
         center = (self.width // 2, self.height // 2)
         frame = Frame((self.width, self.height))
         ck = (127, 33, 33)
@@ -22,17 +22,17 @@ class RectShape(Shape):
         return frame
 
     @property
-    def shape(self):
-        return self._shape
+    def shape(self) -> Frame:
+        return self.__shape
 
     @property
-    def width(self):
-        return self._width
+    def width(self) -> float:
+        return self.__width
 
     @property
-    def height(self):
-        return self._height
+    def height(self) -> float:
+        return self.__height
 
     @property
-    def is_rect(self):
+    def is_rect(self) -> bool:
         return True

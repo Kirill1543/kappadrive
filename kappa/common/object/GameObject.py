@@ -127,3 +127,7 @@ class GameObject(CommonObject):
     @property
     def speed(self):
         return self._m.speed
+
+    @speed.setter
+    def speed(self, value):
+        self._m.speed = value

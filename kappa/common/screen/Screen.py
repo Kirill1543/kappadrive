@@ -117,3 +117,6 @@ class Screen(object):
         self.blit_objects()
 
         self.blit_objects_queue = None
+
+    def update(self):
+        self.map.update()

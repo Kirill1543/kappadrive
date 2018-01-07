@@ -1,10 +1,16 @@
 import random
 
+import pygame
+
+from ..camera import Camera
 from ..map.Box import Box
 from ..object.GameObject import GameObject
-from ...Settings import NEAR_OBJECTS_MOVE, BOX_WIDTH, BOX_HEIGHT, BOX_TEXTURE_WIDTH, BOX_TEXTURE_HEIGHT
+from ...Settings import NEAR_OBJECTS_MOVE, BOX_WIDTH, BOX_HEIGHT, BOX_TEXTURE_WIDTH, BOX_TEXTURE_HEIGHT, \
+    NEAR_OBJECTS_DRAW, DRAW_DEBUG, BACKGROUND_TEXTURE_WIDTH, BACKGROUND_TEXTURE_HEIGHT, BACKGROUND_TEXTURE_SOURCE_WIDTH, \
+    BACKGROUND_TEXTURE_SOURCE_HEIGHT
 from ...core.Color import WHITE, RED, BLUE, GREEN
-from ...core.geom import intersection_circle_with_circle, Circle, EPSILON, Point, Angle
+from ...core.frame.Frame import Frame
+from ...core.geom import intersection_circle_with_circle, Circle, EPSILON, Point
 from ...core.primitives.Draw import Draw
 from ...logger.Logger import Logger
 
@@ -17,14 +23,14 @@ class BoxedMap:
         self.width = width
         self.height = height
         self.levels = levels
-        self._boxes = []
-        self._obj_draw_queue = None
-        self._display_frame = None
-        self._background_textures = None
+        self.__boxes = []
+        self.__display_obj_queue = None
+        self.__display_frame = None
+        self.__background_textures = []
 
     def __str__(self):
         out = ""
-        for z, row1 in enumerate(self._boxes):
+        for z, row1 in enumerate(self.__boxes):
             for y, row2 in enumerate(row1):
                 for x, val in enumerate(row2):
                     if val.object_list:
@@ -39,11 +45,20 @@ class BoxedMap:
     def box_height(self):
         return self.height // BOX_HEIGHT
 
+    @staticmethod
+    def get_box_id_by_coords(x, y):
+        return x // BOX_WIDTH, y // BOX_HEIGHT
+
     def get_box_by_coords(self, coords):
-        return self._boxes[coords[2]][coords[1] // BOX_HEIGHT][coords[0] // BOX_WIDTH]
+        return self.__boxes[coords[2]][coords[1] // BOX_HEIGHT][coords[0] // BOX_WIDTH]
 
     def get_box_by_point(self, point: Point):
         return self.get_box_by_coords((int(point.x), int(point.y), int(point.z)))
+
+    def get_boxes_by_camera(self, camera: Camera):
+        return (self.get_box_id_by_coords(max(int(camera.x), 0), max(int(camera.y), 0))), (
+            self.get_box_id_by_coords(min(int(camera.x) + camera.width, self.width) - 1,
+                                      min(int(camera.y) + camera.height, self.height) - 1))
 
     def point_is_inside(self, point: Point):
         return 0 <= point.x < self.width and 0 <= point.y < self.height
@@ -51,7 +66,7 @@ class BoxedMap:
     def set_random_background(self):
         w = self.width // BOX_WIDTH + (self.width % BOX_WIDTH > 0)
         h = self.height // BOX_HEIGHT + (self.height % BOX_HEIGHT > 0)
-        self._boxes = []
+        self.__boxes = []
         for l in range(0, self.levels):
             _map = []
             for i in range(0, h):
@@ -60,7 +75,7 @@ class BoxedMap:
                     _line.append(Box([[random.randint(0, 1) for i in range(0, BOX_TEXTURE_WIDTH)] for j in
                                       range(0, BOX_TEXTURE_HEIGHT)]))
                 _map.append(_line)
-            self._boxes.append(_map)
+            self.__boxes.append(_map)
 
     def add_obj(self, obj):
         self.add_obj_to(obj, obj.center)
@@ -68,6 +83,71 @@ class BoxedMap:
     def add_obj_to(self, obj, pos):
         obj.center = pos
         self.get_box_by_point(pos).add_obj(obj)
+
+    def load_textures(self, fullname, w=BACKGROUND_TEXTURE_WIDTH, h=BACKGROUND_TEXTURE_HEIGHT):
+        image = pygame.image.load(fullname)
+        if image.get_alpha is None:
+            image = image.convert()
+        else:
+            image = image.convert_alpha()
+        s_w = BACKGROUND_TEXTURE_SOURCE_WIDTH
+        s_h = BACKGROUND_TEXTURE_SOURCE_HEIGHT
+        for j in range(0, 1):
+            for i in range(0, 2):
+                # print i, j
+                self.__background_textures.append(Frame.by_surface(pygame.Surface((w, h))))
+                self.__background_textures[i].display(
+                    Frame.by_surface(pygame.transform.scale(image.subsurface(i * s_w, j * s_h, s_w, s_h), (w, h))),
+                    (0, 0))
+
+    def __display_background(self, camera: Camera, frame: Frame):
+        lt_box_id, rb_box_id = self.get_boxes_by_camera(camera)
+        BoxedMap.log.debug("Selected draw boxes:{}-{}".format(lt_box_id, rb_box_id))
+        offset_h = max(int(camera.y), 0) % BOX_HEIGHT
+        pos_y = -min(camera.y, 0)
+        for box_h in range(lt_box_id[1], rb_box_id[1] + 1):
+            offset_w = max(int(camera.x), 0) % BOX_WIDTH
+            pos_x = -min(camera.x, 0)
+
+            for box_w in range(lt_box_id[0], rb_box_id[0] + 1):
+                img_lt_corner = (offset_w, offset_h)
+                img_size = (BOX_WIDTH - offset_w, BOX_HEIGHT - offset_h)
+                curr_box = self.boxes[camera.center.z][box_h][box_w]
+                img_to_blit = curr_box.build_background(self.__background_textures)
+                frame.display(img_to_blit.subframe(*img_lt_corner, *img_size), (pos_x, pos_y))
+
+                pos_x += BOX_WIDTH - offset_w
+                offset_w = 0
+
+            pos_y += BOX_HEIGHT - offset_h
+            offset_h = 0
+
+        for box_h in range(min(lt_box_id[1] - NEAR_OBJECTS_DRAW, 0),
+                           max(rb_box_id[1] + NEAR_OBJECTS_DRAW, self.box_height)):
+            for box_w in range(min(lt_box_id[0] - NEAR_OBJECTS_DRAW, 0),
+                               max(rb_box_id[0] + NEAR_OBJECTS_DRAW, self.box_width)):
+                self.__display_obj_queue += self.boxes[camera.center.z][box_h][box_w].object_list
+
+    def __display_objects(self, camera: Camera, frame: Frame):
+        BoxedMap.log.debug("BoxedMap objects list:{}".format(self))
+        for obj in self.__display_obj_queue:
+            slicing = camera.topleft - Point(0, 0, 0)
+            obj.draw_shape_on(frame, obj.center - slicing)
+            if obj.is_movable and DRAW_DEBUG:
+                self.__draw_lines(frame, obj, slicing)
+
+    def display(self, camera: Camera) -> Frame:
+        BoxedMap.log.debug("Camera LeftTop Position:{}".format((camera.x, camera.y)))
+        frame = Frame((camera.width, camera.height))
+
+        self.__display_obj_queue = []
+
+        self.__display_background(camera, frame)
+        self.__display_objects(camera, frame)
+
+        self.__display_obj_queue = None
+
+        return frame
 
     def expand_boxes(self, input_boxes, delta):
         return (max(input_boxes[0][0] - delta, 0), max(input_boxes[0][1] - delta, 0)), (
@@ -79,12 +159,12 @@ class BoxedMap:
         objects = []
         for box_h in range(lt[1], rb[1] + 1):
             for box_w in range(lt[0], rb[0] + 1):
-                for o in self._boxes[0][box_h][box_w].object_list:
+                for o in self.__boxes[0][box_h][box_w].object_list:
                     if not o == obj:
                         objects.append(o)
         return objects
 
-    def draw_lines(self, frame, obj, slicing):
+    def __draw_lines(self, frame, obj, slicing):
         obj_list = self.get_near_obj_list(obj)
         for end_object in obj_list:
             BoxedMap.log.debug(
@@ -162,7 +242,7 @@ class BoxedMap:
         self.time += 1
         BoxedMap.log.debug("Time:{}".format(self.time))
         move_list = []
-        for row in self._boxes[0]:
+        for row in self.__boxes[0]:
             for box in row:
                 for i, obj in enumerate(box.object_list):
                     move_list.append((obj, box, i))
@@ -174,8 +254,8 @@ class BoxedMap:
 
     @property
     def boxes(self):
-        return self._boxes
+        return self.__boxes
 
     @boxes.setter
     def boxes(self, value):
-        self._boxes = value
+        self.__boxes = value

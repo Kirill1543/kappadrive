@@ -5,6 +5,7 @@ import pygame
 from ..camera import Camera
 from ..map.Box import Box
 from ..object.GameObject import GameObject
+from ..view.Viewable import Viewable
 from ...Settings import NEAR_OBJECTS_MOVE, BOX_WIDTH, BOX_HEIGHT, BOX_TEXTURE_WIDTH, BOX_TEXTURE_HEIGHT, \
     NEAR_OBJECTS_DRAW, DRAW_DEBUG, BACKGROUND_TEXTURE_WIDTH, BACKGROUND_TEXTURE_HEIGHT, BACKGROUND_TEXTURE_SOURCE_WIDTH, \
     BACKGROUND_TEXTURE_SOURCE_HEIGHT
@@ -15,7 +16,7 @@ from ...core.primitives.Draw import Draw
 from ...logger.Logger import Logger
 
 
-class BoxedMap:
+class BoxedMap(Viewable):
     log = Logger(__name__).get()
 
     def __init__(self, width, height, levels=1):
@@ -136,7 +137,7 @@ class BoxedMap:
             if obj.is_movable and DRAW_DEBUG:
                 self.__draw_lines(frame, obj, slicing)
 
-    def display(self, camera: Camera) -> Frame:
+    def view(self, camera: Camera) -> Frame:
         BoxedMap.log.debug("Camera LeftTop Position:{}".format((camera.x, camera.y)))
         frame = Frame((camera.width, camera.height))
 

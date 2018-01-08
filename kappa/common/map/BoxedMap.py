@@ -85,22 +85,6 @@ class BoxedMap(Viewable):
         obj.center = pos
         self.get_box_by_point(pos).add_obj(obj)
 
-    def load_textures(self, fullname, w=BACKGROUND_TEXTURE_WIDTH, h=BACKGROUND_TEXTURE_HEIGHT):
-        image = pygame.image.load(fullname)
-        if image.get_alpha is None:
-            image = image.convert()
-        else:
-            image = image.convert_alpha()
-        s_w = BACKGROUND_TEXTURE_SOURCE_WIDTH
-        s_h = BACKGROUND_TEXTURE_SOURCE_HEIGHT
-        for j in range(0, 1):
-            for i in range(0, 2):
-                # print i, j
-                self.__background_textures.append(Frame.by_surface(pygame.Surface((w, h))))
-                self.__background_textures[i].display(
-                    Frame.by_surface(pygame.transform.scale(image.subsurface(i * s_w, j * s_h, s_w, s_h), (w, h))),
-                    (0, 0))
-
     def __display_background(self, camera: Camera, frame: Frame):
         lt_box_id, rb_box_id = self.get_boxes_by_camera(camera)
         BoxedMap.log.debug("Selected draw boxes:{}-{}".format(lt_box_id, rb_box_id))

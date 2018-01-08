@@ -1,20 +1,24 @@
-from ...core.image.Image import Image
+import os
 
 
 class TextureBank:
     def __init__(self):
-        self._bank = {}
+        self.__src_path: str = ''
+        self.__bank: dict = {}
 
-    def get(self, key):
-        return self._bank[key]
+    def __new__(cls):
+        if not hasattr(cls, 'instance'):
+            cls.instance = super().__new__(cls)
+        return cls.instance
 
-    def add(self, key, value):
-        self._bank[key] = value
+    def __getitem__(self, key):
+        return self.__dict__[key]
 
-    def remove(self, key):
-        del self._bank[key]
+    def __setitem__(self, key, value):
+        self.__bank[key] = value
 
-    def load_packed(self, keys, full_path, width, height, source_width, source_height):
-        images = Image.load_packed(full_path, width, height, source_width, source_height)
-        for i in range(len(keys)):
-            self.add(keys[i], images[i])
+    def __delitem__(self, key):
+        del self.__bank[key]
+
+    def load(self, path: os.path):
+        self.__src_path = path

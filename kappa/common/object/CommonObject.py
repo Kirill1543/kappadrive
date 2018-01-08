@@ -1,4 +1,3 @@
-from ...Settings import BOX_WIDTH, BOX_HEIGHT
 from ...core.geom.Point import Point
 
 
@@ -7,15 +6,14 @@ class CommonObject(object):
         self.center = center
         self.texture = texture
 
-    def center_in_box(self, i, j, l):
-        return self.center.z == l and self.center.x / BOX_WIDTH == i and self.center.y / BOX_HEIGHT == j
+    def __str__(self) -> str:
+        return "{}:{}".format(self.__class__.__name__, self.center.coords)
 
-    def center_on_coords(self, x, y):
-        self.center.x = x
-        self.center.y = y
+    def __repr__(self):
+        return self.__str__()
 
-    def center_on(self, c_obj):
-        self.center_on_coords(c_obj.center.x, c_obj.center.y)
+    def center_on(self, c_obj: __name__):
+        self.move_to(c_obj.center)
 
     def move_to(self, point: Point):
         self.center = point

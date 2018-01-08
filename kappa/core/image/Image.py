@@ -1,4 +1,4 @@
-from ...core.frame.Frame import Frame
+from ..frame.Frame import Frame
 from ..frame.Transform import Transform
 import pygame
 
@@ -23,6 +23,8 @@ class Image:
 
         for j in range(0, count_height):
             for i in range(0, count_width):
-                loaded_images.append(Transform.copy_from(image, i * source_width, j * source_height, source_width, source_height, width, height))
+                loaded_images.append(
+                    Transform.copy_from(image, i * source_width, j * source_height, source_width, source_height, width,
+                                        height))
 
         return loaded_images

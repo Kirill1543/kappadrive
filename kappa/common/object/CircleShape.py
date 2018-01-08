@@ -8,10 +8,10 @@ from ...core.primitives.Draw import Draw
 class CircleShape(Shape):
     def __init__(self, r, color=BLACK):
         super().__init__(color)
-        self._radius = r
-        self._shape = self._create_shape()
+        self.__radius = r
+        self.__shape: Frame = self.__create_shape()
 
-    def _create_shape(self) -> Frame:
+    def __create_shape(self) -> Frame:
         center = (self.radius, self.radius)
         frame = Frame((self.radius * 2, self.radius * 2))
         ck = (127, 33, 33)
@@ -22,21 +22,21 @@ class CircleShape(Shape):
         return frame
 
     @property
-    def shape(self):
-        return self._shape
+    def shape(self) -> Frame:
+        return self.__shape
 
     @property
-    def width(self):
-        return self.radius * 2
+    def width(self) -> float:
+        return self.__radius * 2
 
     @property
-    def height(self):
-        return self.radius * 2
+    def height(self) -> float:
+        return self.__radius * 2
 
     @property
-    def radius(self):
-        return self._radius
+    def radius(self) -> float:
+        return self.__radius
 
     @property
-    def is_circle(self):
+    def is_circle(self) -> bool:
         return True

@@ -1,6 +1,3 @@
-import pygame
-
-from ..camera.Camera import Camera
 from ..view.View import View
 from ...Settings import SCREEN_DEFAULT_WIDTH, SCREEN_DEFAULT_HEIGHT, BACKGROUND_DEFAULT_COLOR
 from ...core.frame.Frame import Frame
@@ -13,14 +10,9 @@ class Screen(object):
     def __init__(self, w=SCREEN_DEFAULT_WIDTH, h=SCREEN_DEFAULT_HEIGHT):
         self.screen = Frame.set_mode((w, h))
         self.background = Frame.empty((w, h))
-        self.set_background_color(BACKGROUND_DEFAULT_COLOR)
-
-        self.camera: Camera = Camera()
+        self.background.fill(BACKGROUND_DEFAULT_COLOR)
 
         self.__view_list = []
-
-    def set_background_color(self, color_rgb):
-        self.background.fill(color_rgb)
 
     def display(self):
         Screen.log.debug("Displaying background...")
@@ -36,4 +28,3 @@ class Screen(object):
 
     def add_view(self, view: View):
         self.__view_list.append(view)
-        self.camera = view.camera

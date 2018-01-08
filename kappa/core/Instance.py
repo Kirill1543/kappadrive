@@ -10,7 +10,7 @@ from ..logger.Logger import Logger
 class Instance:
     log = Logger(__name__).get()
 
-    def __init__(self, caption: str = None):
+    def __init__(self, caption: str = 'kappa game'):
         self.caption: str = caption
         self.clock: Clock = None
         self.screen: Screen = None
@@ -22,7 +22,7 @@ class Instance:
 
     def start(self):
         while 1:
-            Instance.log.debug("Starting Instance update iteration")
+            Instance.log.debug("Instance update iteration started")
             start_time = timeit.default_timer()
             self.clock.tick(100)
             for event in pygame.event.get():
@@ -33,6 +33,7 @@ class Instance:
             self.screen.display()
 
             pygame.display.flip()
+            Instance.log.debug("Instance update iteration finished:")
             Instance.log.debug("Total execution time={}ms".format((timeit.default_timer() - start_time) * 1000))
 
     def parse_event(self, event):

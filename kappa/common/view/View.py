@@ -37,7 +37,7 @@ class View:
     def camera(self, value: Camera):
         self.__camera = value
 
-    def get(self) -> Frame:
+    def display(self) -> Frame:
         return self.__viewable.view(self.__camera)
 
     def update(self):

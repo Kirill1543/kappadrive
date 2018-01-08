@@ -4,11 +4,11 @@ from ...core.frame.Frame import Frame
 from ...logger.Logger import Logger
 
 
-class Screen(object):
+class Screen:
     log = Logger(__name__).get()
 
     def __init__(self, w=SCREEN_DEFAULT_WIDTH, h=SCREEN_DEFAULT_HEIGHT):
-        self.screen = Frame.set_mode((w, h))
+        self.__screen = Frame.set_mode((w, h))
         self.background = Frame.empty((w, h))
         self.background.fill(BACKGROUND_DEFAULT_COLOR)
 
@@ -16,11 +16,11 @@ class Screen(object):
 
     def display(self):
         Screen.log.debug("Displaying background...")
-        self.screen.display(self.background, (0, 0))
+        self.__screen.display(self.background, (0, 0))
         Screen.log.debug("Displaying view list...")
         for view in self.__view_list:
             Screen.log.debug("Displaying {}".format(view))
-            self.screen.display(view.get(), (view.x, view.y))
+            self.__screen.display(view.display(), (view.x, view.y))
 
     def update(self):
         for view in self.__view_list:

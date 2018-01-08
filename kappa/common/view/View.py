@@ -39,3 +39,6 @@ class View:
 
     def get(self) -> Frame:
         return self.__viewable.view(self.__camera)
+
+    def update(self):
+        self.__viewable.update()

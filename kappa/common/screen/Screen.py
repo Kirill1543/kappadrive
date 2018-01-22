@@ -1,16 +1,16 @@
 from ..view.View import View
-from ...Settings import SCREEN_DEFAULT_WIDTH, SCREEN_DEFAULT_HEIGHT, BACKGROUND_DEFAULT_COLOR
 from ...core.frame.Frame import Frame
 from ...logger.Logger import Logger
 
 
 class Screen:
     log = Logger(__name__).get()
+    BACKGROUND_DEFAULT_COLOR = (0, 0, 0)
 
-    def __init__(self, w=SCREEN_DEFAULT_WIDTH, h=SCREEN_DEFAULT_HEIGHT):
-        self.__screen = Frame.set_mode((w, h))
-        self.background = Frame.empty((w, h))
-        self.background.fill(BACKGROUND_DEFAULT_COLOR)
+    def __init__(self, size):
+        self.__screen = Frame.set_mode(size)
+        self.background = Frame.empty(size)
+        self.background.fill(Screen.BACKGROUND_DEFAULT_COLOR)
 
         self.__view_list = []
 

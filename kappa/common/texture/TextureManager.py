@@ -6,6 +6,9 @@ from kappa.system.meta.Singleton import Singleton
 
 class TextureManager(metaclass=Singleton):
     PACK_TAG = 'pack'
+    PACK_DELIMITER = '_'
+    ACCEPTED_FILE_EXTENSIONS = 'png'
+    EXTENSION_DELIMITER = '.'
 
     def __init__(self):
         self.__src_path: str = None
@@ -25,9 +28,12 @@ class TextureManager(metaclass=Singleton):
         for item in os.listdir(path):
             full_path = os.path.join(path, item)
             if os.path.isfile(full_path):
-                item_without_extension = item.split('.')[0]
-                if item.startswith(TextureManager.PACK_TAG):
-                    pack_tag, size, item_without_extension = item_without_extension.split('_')
-                    self.__texture_holder[item_without_extension] = Image.load_packed(full_path, int(size), int(size))
-                else:
-                    self.__texture_holder[item_without_extension] = Image.load(full_path)
+                item_without_extension, item_extension = item.split(TextureManager.EXTENSION_DELIMITER)
+                if item_extension in TextureManager.ACCEPTED_FILE_EXTENSIONS:
+                    if item.startswith(TextureManager.PACK_TAG):
+                        pack_tag, size, item_without_extension = item_without_extension.split(
+                            TextureManager.PACK_DELIMITER)
+                        self.__texture_holder[item_without_extension] = Image.load_packed(full_path, int(size),
+                                                                                          int(size))
+                    else:
+                        self.__texture_holder[item_without_extension] = Image.load(full_path)

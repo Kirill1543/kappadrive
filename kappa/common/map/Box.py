@@ -1,12 +1,12 @@
+from ...Settings import DRAW_DEBUG
 from ...core.Color import BLACK
-from ...core.primitives.Draw import Draw
-from ...Settings import BOX_HEIGHT, BOX_WIDTH, BOX_TEXTURE_HEIGHT, BOX_TEXTURE_WIDTH, BACKGROUND_TEXTURE_WIDTH, \
-    BACKGROUND_TEXTURE_HEIGHT, DRAW_DEBUG
 from ...core.frame.Frame import Frame
+from ...core.primitives.Draw import Draw
 
 
 class Box:
-    def __init__(self, background):
+    def __init__(self, size, background):
+        self.size = size
         self.__object_list = []
         self.__background = background
 
@@ -17,26 +17,19 @@ class Box:
         return self.__str__()
 
     def build_background(self):
-        frame = Frame(size=(BOX_WIDTH, BOX_HEIGHT))
-        for i in range(BOX_TEXTURE_HEIGHT):
-            for j in range(BOX_TEXTURE_WIDTH):
-                frame.display((self.__background[i][j]),
-                              (j * BACKGROUND_TEXTURE_WIDTH, i * BACKGROUND_TEXTURE_HEIGHT))
+        frame = Frame(self.size)
+        background_height = len(self.__background)
+        background_width = len(self.__background[0])
+        for i in range(background_height):
+            for j in range(background_width):
+                frame.display((self.__background[j][i]),
+                              (j * self.size[0] // background_width, i * self.size[1] // background_height))
         if DRAW_DEBUG:
-            Draw.rect(frame, BLACK, (0, 0), (BOX_WIDTH, BOX_HEIGHT), 1)
+            Draw.rect(frame, BLACK, (0, 0), self.size, 1)
         return frame
 
     def add_obj(self, obj):
         self.__object_list.append(obj)
-
-    @staticmethod
-    def get_id_by_coords(x, y, w=BOX_WIDTH, h=BOX_HEIGHT):
-        return x // w, y // h
-
-    @staticmethod
-    def get_id_by_rect(x, y, w, h):
-        return (Box.get_id_by_coords(max(int(x), 0), max(int(y), 0))), (
-            Box.get_id_by_coords(min(int(x) + w, w) - 1, min(int(y) + h, h) - 1))
 
     @property
     def object_list(self):

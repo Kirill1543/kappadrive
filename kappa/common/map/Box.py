@@ -11,7 +11,7 @@ class Box:
         self.__background = background
 
     def __str__(self):
-        return str(self.__object_list)
+        return "{}:{}".format(self.__class__.__name__, str(self.__object_list))
 
     def __repr__(self):
         return self.__str__()

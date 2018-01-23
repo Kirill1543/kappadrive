@@ -90,12 +90,12 @@ class BoxedMap(Viewable):
 
             for box_w in range(lt_box_id[0], rb_box_id[0] + 1):
                 img_lt_corner = (offset_w, offset_h)
-                img_size = ( self.__box_width - offset_w, self.__box_height - offset_h)
+                img_size = (self.__box_width - offset_w, self.__box_height - offset_h)
                 curr_box = self.boxes[int(camera.center.z)][box_h][box_w]
                 img_to_blit = curr_box.build_background()
                 frame.display(img_to_blit.subframe(*img_lt_corner, *img_size), (pos_x, pos_y))
 
-                pos_x +=  self.__box_width - offset_w
+                pos_x += self.__box_width - offset_w
                 offset_w = 0
 
             pos_y += self.__box_height - offset_h
@@ -109,11 +109,15 @@ class BoxedMap(Viewable):
 
     def __display_objects(self, camera: Camera, frame: Frame):
         BoxedMap.log.debug("BoxedMap objects list:{}".format(self))
+        slicing = camera.topleft - Point(0, 0)
         for obj in self.__display_obj_queue:
-            slicing = camera.topleft - Point(0, 0, 0)
-            obj.draw_shape_on(frame, obj.center - slicing)
-            if obj.is_movable and DRAW_DEBUG:
-                self.__draw_lines(frame, obj, slicing)
+            coords = (obj.texture_topleft - camera.topleft).to_int().coords
+            BoxedMap.log.debug("Adding texture for {} to Camera Position {}".format(obj, coords))
+            frame.display(obj.texture, (coords[0], coords[1]))
+            if DRAW_DEBUG:
+                obj.draw_shape_on(frame, obj.center - slicing)
+                if obj.is_movable:
+                    self.__draw_lines(frame, obj, slicing)
 
     def view(self, camera: Camera) -> Frame:
         BoxedMap.log.debug("Camera LeftTop Position:{}".format((camera.x, camera.y)))
@@ -199,12 +203,12 @@ class BoxedMap(Viewable):
             BoxedMap.log.debug("Skipping moving iteration for {}: Not movable".format(obj))
             return
 
-        if not self.point_is_inside_borders(obj.get_time_position()):
-            BoxedMap.log.debug("Skipping moving iteration for {}: Destination point outside map borders".format(obj))
-            return
-
         if obj.move_vector.is_null():
             BoxedMap.log.debug("Skipping moving iteration for {}: Moving vector is null".format(obj))
+            return
+
+        if not self.point_is_inside_borders(obj.get_time_position()):
+            BoxedMap.log.debug("Skipping moving iteration for {}: Destination point outside map borders".format(obj))
             return
 
         BoxedMap.log.debug("Starting moving iteration for {}.".format(obj))
@@ -220,12 +224,14 @@ class BoxedMap(Viewable):
     def update(self):
         self.time += 1
         BoxedMap.log.debug("Time:{}".format(self.time))
-        move_list = []
+        update_list = []
         for row in self.__boxes[0]:
             for box in row:
                 for i, obj in enumerate(box.object_list):
-                    move_list.append((obj, box, i))
-        for obj, box, i in move_list:
+                    update_list.append((obj, box, i))
+        BoxedMap.log.debug("Updating object list: {}".format(update_list))
+        for obj, box, i in update_list:
+            obj.update()
             self.__try_move(obj)
             if self.get_box_by_point(obj.center) != box:
                 box.object_list.pop(i)

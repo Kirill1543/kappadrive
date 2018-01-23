@@ -2,7 +2,7 @@ import logging
 
 import os
 
-from ..Settings import LOG_LEVEL, LOG_DIR, LOG_FILE
+from kappa.Settings import LOG_LEVEL, LOG_DIR, LOG_FILE
 
 
 class Logger:
@@ -22,10 +22,10 @@ class Logger:
             console_handler.setFormatter(formatter)
             logger.addHandler(handler)
             logger.addHandler(console_handler)
-        self._logger = logger
+        self.__logger = logger
 
     def get(self):
-        return self._logger
+        return self.__logger
 
     def check_folder_exists(self):
         if not os.path.exists(self.log_dir):

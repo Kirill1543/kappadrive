@@ -5,10 +5,10 @@ from . import EPSILON
 
 class Angle:
     def __init__(self, angle: float):
-        self._radians = self._set_angle(angle)
+        self.__radians = self._set_angle(angle)
 
     def __str__(self):
-        return 'Angle({}r:{}d)'.format(self._radians, self._radians * 360 / (2 * pi))
+        return 'Angle({}r:{}d)'.format(self.__radians, self.__radians * 360 / (2 * pi))
 
     def __repr__(self):
         return self.__str__()
@@ -17,32 +17,32 @@ class Angle:
         return Angle(-self.radians)
 
     def __add__(self, other):
-        return Angle(self._set_angle(self._radians + other.radians))
+        return Angle(self._set_angle(self.__radians + other.radians))
 
     def __sub__(self, other):
         return self.__add__(-other)
 
     def __eq__(self, other):
-        return abs(self._radians - other.radians) < EPSILON
+        return abs(self.__radians - other.radians) < EPSILON
 
     def __ne__(self, other):
-        return abs(self._radians - other.radians) >= EPSILON
+        return abs(self.__radians - other.radians) >= EPSILON
 
     def __lt__(self, other):
-        return self != other and self._radians < other.radians
+        return self != other and self.__radians < other.radians
 
     def __le__(self, other):
-        return self == other or self._radians < other.radians
+        return self == other or self.__radians < other.radians
 
     def __gt__(self, other):
-        return self != other and self._radians > other.radians
+        return self != other and self.__radians > other.radians
 
     def __ge__(self, other):
-        return self == other or self._radians > other.radians
+        return self == other or self.__radians > other.radians
 
     @property
     def radians(self) -> float:
-        return self._radians
+        return self.__radians
 
     @staticmethod
     def _set_angle(angle: float) -> float:

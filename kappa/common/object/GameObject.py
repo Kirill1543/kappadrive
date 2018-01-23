@@ -1,8 +1,7 @@
 from math import sqrt
 
-from .CommonObject import CommonObject
-from .MovingStrategy import MovingStrategy
 from .Shape import Shape
+from .UpdateStrategy import UpdateStrategy
 from ...core.frame.Frame import Frame
 from ...core.geom import EPSILON
 from ...core.geom import Point
@@ -10,38 +9,51 @@ from ...core.geom import Vector
 from ...logger.Logger import Logger
 
 
-class GameObject(CommonObject):
+class GameObject:
     log = Logger(__name__).get()
 
-    def __init__(self, center: Point, texture, shape: Shape, moving_strategy: MovingStrategy):
-        CommonObject.__init__(self, center, texture)
+    def __init__(self, center: Point, shape: Shape, update_strategy: UpdateStrategy):
+        self.center = center
         self.__shape: Shape = shape
-        self.__m: MovingStrategy = moving_strategy
+        self.__u: UpdateStrategy = update_strategy
+
+    def __str__(self) -> str:
+        return "{}:{}".format(self.__class__.__name__, self.center.coords)
+
+    def __repr__(self):
+        return self.__str__()
+
+    def center_on(self, c_obj: __name__):
+        self.move_to(c_obj.center)
+
+    def move_to(self, point: Point):
+        self.center = point
 
     def update(self):
-        pass
+        GameObject.log.debug("Updating {}".format(self))
+        self.__u.update()
 
     def start_move(self, direction):
         GameObject.log.debug("Starting move {} with direction={}".format(self, direction))
-        self.__m.change_move(direction, 1)
+        self.__u.start_move(direction)
 
     def stop_move(self, direction):
         GameObject.log.debug("Stopping move {} with direction={}".format(self, direction))
-        self.__m.change_move(direction, -1)
+        self.__u.stop_move(direction)
 
     def move_offset(self, offset: Vector):
         self.center += offset
 
     def move(self, t=1):
-        self.center += self.__m.get_time_vector(t)
+        self.center += self.__u.get_time_vector(t)
 
     def get_time_position(self, t=1) -> Point:
-        return self.center + self.__m.get_time_vector(t)
+        return self.center + self.__u.get_time_vector(t)
 
     def intersect(self, obj: __name__, t=0) -> bool:
         if self.shape.is_circle and obj.shape.is_circle:
             c: Vector = obj.center - self.center
-            v: Vector = self.__m.get_time_vector(t)
+            v: Vector = self.__u.get_time_vector(t)
             r: float = obj.shape.radius + self.__shape.radius
             d = v * c - (c * c - r * r)
             GameObject.log.debug("Calculated c={}, v={}, r={}, d={}".format(c.coords, v.coords, r, d))
@@ -105,19 +117,26 @@ class GameObject(CommonObject):
 
     @property
     def topleft(self):
-        return Point(self.x, self.y, 0)
+        return Point(self.x, self.y)
+
+    @property
+    def texture_topleft(self):
+        center = self.center.to_int()
+        texture_size = self.texture.get_size()
+        out_coords = [center[i] - texture_size[i] // 2 for i in range(2)]
+        return Point(out_coords[0], out_coords[1])
+
+    @property
+    def texture(self) -> Frame:
+        return self.__u.texture
 
     @property
     def move_vector(self):
-        return self.__m.get_time_vector()
-
-    @move_vector.setter
-    def move_vector(self, value: Vector):
-        self.__m.move_vector = value
+        return self.__u.get_time_vector()
 
     @property
     def is_movable(self):
-        return self.__m.is_movable
+        return self.__u.is_movable
 
     @property
     def shape(self):
@@ -125,8 +144,8 @@ class GameObject(CommonObject):
 
     @property
     def speed(self):
-        return self.__m.speed
+        return self.__u.speed
 
     @speed.setter
     def speed(self, value):
-        self.__m.speed = value
+        self.__u.speed = value

@@ -59,8 +59,8 @@ class MovableUpdateStrategy(UpdateStrategy):
             self.__move_textures[Move.NO] = self.__move_textures[direction][0]
 
         self.move_vector_normalized = vector
-        self.reset()
         self.textures = self.__move_textures[direction]
+        self.reset()
 
     def get_time_vector(self, t: float = 1) -> Vector:
         return self.move_vector * t

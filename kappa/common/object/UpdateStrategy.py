@@ -3,7 +3,7 @@ from ...core.geom.Vector import Vector
 
 
 class UpdateStrategy:
-    def __init__(self, textures=None, update_ticks=8):
+    def __init__(self, textures=None, update_ticks=9):
         self.__speed = 0.0
         self.__move_vector_normalized: Vector = Vector(0.0, 0.0, 0.0)
         self.__texture_list = None
@@ -30,7 +30,7 @@ class UpdateStrategy:
                 self.__current_index = 0
 
     def reset(self):
-        self.__update_tick = 0
+        self.__update_tick = len(self.__texture_list) - 1
         self.__current_index = 0
 
     @property

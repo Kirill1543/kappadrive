@@ -12,10 +12,15 @@ from ...logger.Logger import Logger
 class GameObject:
     log = Logger(__name__).get()
 
-    def __init__(self, center: Point, shape: Shape, update_strategy: UpdateStrategy):
+    def __init__(self, center: Point, shape: Shape, update_strategy: UpdateStrategy, texture_offset: Vector = None):
         self.center = center
         self.__shape: Shape = shape
         self.__u: UpdateStrategy = update_strategy
+        if texture_offset:
+            self.__texture_offset = texture_offset
+        elif self.__u.textures:
+            texture_size = self.texture.get_size()
+            self.__texture_offset = Vector(*[texture_size[i] // 2 for i in range(2)])
 
     def __str__(self) -> str:
         return "{}:{}".format(self.__class__.__name__, self.center.coords)
@@ -121,10 +126,7 @@ class GameObject:
 
     @property
     def texture_topleft(self):
-        center = self.center.to_int()
-        texture_size = self.texture.get_size()
-        out_coords = [center[i] - texture_size[i] // 2 for i in range(2)]
-        return Point(out_coords[0], out_coords[1])
+        return self.center - self.__texture_offset
 
     @property
     def texture(self) -> Frame:

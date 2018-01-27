@@ -37,7 +37,7 @@ class Instance:
             Instance.log.debug("Total execution time={}ms".format((timeit.default_timer() - start_time) * 1000))
 
     def parse_event(self, event):
-        pass
+        return 1
 
     def update(self):
         start_time = timeit.default_timer()

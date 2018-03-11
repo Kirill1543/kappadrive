@@ -1,8 +1,8 @@
-from ..object.Shape import Shape
-from ...core.Color import BLACK
-from ...core.geom import Point
-from ...core.frame.Frame import Frame
-from ...core.primitives.Draw import Draw
+from kappa.common.object.shape.Shape import Shape
+from kappa.core.Color import BLACK
+from kappa.core.geom import Point
+from kappa.core.frame.Frame import Frame
+from kappa.core.primitives.Draw import Draw
 
 
 class CircleShape(Shape):

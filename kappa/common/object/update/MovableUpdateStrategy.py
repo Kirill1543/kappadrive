@@ -1,7 +1,7 @@
-from kappa.common.object.Move import Move
-from ...common.object.UpdateStrategy import UpdateStrategy
-from ...core.geom.Vector import Vector
-from ...logger.Logger import Logger
+from kappa.common.object.action.Move import Move
+from kappa.common.object.update.UpdateStrategy import UpdateStrategy
+from kappa.core.geom.Vector import Vector
+from kappa.logger.Logger import Logger
 
 
 class MovableUpdateStrategy(UpdateStrategy):
@@ -72,8 +72,3 @@ class MovableUpdateStrategy(UpdateStrategy):
     @property
     def move_vector(self):
         return self.move_vector_normalized * self.speed
-
-    @move_vector.setter
-    def move_vector(self, value: Vector):
-        self.move_vector_normalized = value.normalize()
-        self.speed = abs(value)

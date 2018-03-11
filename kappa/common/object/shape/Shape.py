@@ -1,4 +1,4 @@
-from ...core.Color import BLACK
+from kappa.core.Color import BLACK
 
 
 class Shape:

@@ -1,5 +1,5 @@
-from ...core.frame.Frame import Frame
-from ...core.geom.Vector import Vector
+from kappa.core.frame.Frame import Frame
+from kappa.core.geom.Vector import Vector
 
 
 class UpdateStrategy:
@@ -48,10 +48,6 @@ class UpdateStrategy:
     @property
     def move_vector(self):
         return self.__move_vector_normalized
-
-    @move_vector.setter
-    def move_vector(self, value: Vector):
-        pass
 
     @property
     def move_vector_normalized(self):

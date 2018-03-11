@@ -1,7 +1,8 @@
 from math import sqrt
 
-from .Shape import Shape
-from .UpdateStrategy import UpdateStrategy
+from kappa.common.object.action.Action import Action
+from kappa.common.object.shape.Shape import Shape
+from kappa.common.object.update.UpdateStrategy import UpdateStrategy
 from ...core.frame.Frame import Frame
 from ...core.geom import EPSILON
 from ...core.geom import Point
@@ -38,6 +39,10 @@ class GameObject:
         GameObject.log.debug("Updating {}".format(self))
         self.__u.update()
 
+    def reset(self):
+        GameObject.log.debug("Resetting {}".format(self))
+        self.__u.reset()
+
     def start_move(self, direction):
         GameObject.log.debug("Starting move {} with direction={}".format(self, direction))
         self.__u.start_move(direction)
@@ -45,6 +50,9 @@ class GameObject:
     def stop_move(self, direction):
         GameObject.log.debug("Stopping move {} with direction={}".format(self, direction))
         self.__u.stop_move(direction)
+
+    def execute_action(self, action: Action, *args, **kwargs):
+        pass
 
     def move_offset(self, offset: Vector):
         self.center += offset

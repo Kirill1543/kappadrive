@@ -1,6 +1,6 @@
+from kappa.common.object.shape.RectShape import RectShape
+from kappa.common.object.update.MovableUpdateStrategy import MovableUpdateStrategy
 from ..object.GameObject import GameObject
-from ..object.RectShape import RectShape
-from ..object.MovableUpdateStrategy import MovableUpdateStrategy
 from ...core.geom.Point import Point
 
 

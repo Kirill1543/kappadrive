@@ -1,18 +1,17 @@
 from kappa.common.object.GameObject import GameObject
 from kappa.common.object.action.Move import Move
 from kappa.core.geom import Vector
+from . import init_property
 
 
 class MoveAction:
     @staticmethod
     def init(obj: GameObject):
-        if not hasattr(obj, 'x_move'):
-            setattr(obj, 'x_move', Move.NO)
-        if not hasattr(obj, 'y_move'):
-            setattr(obj, 'y_move', Move.NO)
+        init_property(obj, 'x_move', Move.NO)
+        init_property(obj, 'y_move', Move.NO)
 
     @staticmethod
-    def __update_move(obj: GameObject):
+    def update_move(obj: GameObject):
         vector = Vector(0.0, 0.0, 0.0)
         direction = obj.x_move + obj.y_move
 

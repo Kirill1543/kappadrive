@@ -29,7 +29,7 @@ class TextureManager(metaclass=Singleton):
         del self.__texture_holder[key]
 
     def load(self, path: os.path):
-        TextureManager.log.debug("Loading path : {}".format(path))
+        TextureManager.log.debug("Loading path {}".format(path))
         self.__src_path = path
         self.__load_dir(path, self.__texture_holder)
 

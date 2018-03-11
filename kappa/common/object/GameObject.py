@@ -1,6 +1,5 @@
 from math import sqrt
 
-from kappa.common.object.action.Action import Action
 from kappa.common.object.shape.Shape import Shape
 from kappa.common.object.update.UpdateStrategy import UpdateStrategy
 from ...core.frame.Frame import Frame
@@ -50,9 +49,6 @@ class GameObject:
     def stop_move(self, direction):
         GameObject.log.debug("Stopping move {} with direction={}".format(self, direction))
         self.__u.stop_move(direction)
-
-    def execute_action(self, action: Action, *args, **kwargs):
-        pass
 
     def move_offset(self, offset: Vector):
         self.center += offset

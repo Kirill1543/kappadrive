@@ -1,5 +1,6 @@
 from math import sqrt
 
+from kappa.common.object.State import State
 from kappa.common.object.shape.Shape import Shape
 from kappa.common.object.update.UpdateStrategy import UpdateStrategy
 from ...core.frame.Frame import Frame
@@ -13,9 +14,11 @@ class GameObject:
     log = Logger(__name__).get()
 
     def __init__(self, center: Point, shape: Shape, update_strategy: UpdateStrategy, texture_offset: Vector = None):
+        self.state = State.STAND
         self.center = center
         self.__shape: Shape = shape
         self.__u: UpdateStrategy = update_strategy
+        self.__texture_controller = None
         if texture_offset:
             self.__texture_offset = texture_offset
         elif self.__u.textures:
@@ -155,3 +158,11 @@ class GameObject:
     @speed.setter
     def speed(self, value):
         self.__u.speed = value
+
+    @property
+    def texture_controller(self):
+        return self.__texture_controller
+
+    @texture_controller.setter
+    def texture_controller(self, value):
+        self.__texture_controller = value

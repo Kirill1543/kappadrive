@@ -1,4 +1,4 @@
-from kappa.common.object.action.Move import Move
+from kappa.common.object.Direction import Direction
 from kappa.common.object.update.UpdateStrategy import UpdateStrategy
 from kappa.core.geom.Vector import Vector
 from kappa.logger.Logger import Logger
@@ -9,45 +9,45 @@ class MovableUpdateStrategy(UpdateStrategy):
 
     def __init__(self, textures=None):
         super().__init__()
-        self.__x_move = Move.NO
-        self.__y_move = Move.NO
+        self.__x_move = Direction.NO
+        self.__y_move = Direction.NO
         self.__direction = self.__x_move + self.__y_move
         if textures:
             self.__move_textures = textures
-            self.__last_direction = Move.UP
-            self.__move_textures[Move.NO] = self.__move_textures[Move.UP][0]
+            self.__last_direction = Direction.UP
+            self.__move_textures[Direction.NO] = self.__move_textures[Direction.UP][0]
             self.__update_move()
 
     def start_move(self, direction):
-        if direction in Move.X:
+        if direction in Direction.X:
             self.__x_move = direction
-        elif direction in Move.Y:
+        elif direction in Direction.Y:
             self.__y_move = direction
         self.__update_move()
 
     def stop_move(self, direction):
         if direction == self.__x_move:
-            self.__x_move = Move.NO
+            self.__x_move = Direction.NO
         elif direction == self.__y_move:
-            self.__y_move = Move.NO
+            self.__y_move = Direction.NO
         self.__update_move()
 
     def __update_move(self):
         vector = Vector(0.0, 0.0, 0.0)
         direction = self.__x_move + self.__y_move
 
-        if direction != Move.NO:
+        if direction != Direction.NO:
             needs_normalize = True
-            if self.__x_move == Move.LEFT:
+            if self.__x_move == Direction.LEFT:
                 vector[0] = -1.0
-            elif self.__x_move == Move.RIGHT:
+            elif self.__x_move == Direction.RIGHT:
                 vector[0] = 1.0
             else:
                 needs_normalize = False
 
-            if self.__y_move == Move.UP:
+            if self.__y_move == Direction.UP:
                 vector[1] = -1.0
-            elif self.__y_move == Move.DOWN:
+            elif self.__y_move == Direction.DOWN:
                 vector[1] = 1.0
             else:
                 needs_normalize = False
@@ -56,7 +56,7 @@ class MovableUpdateStrategy(UpdateStrategy):
                 vector = vector.normalize()
             direction = self.__x_move + self.__y_move
 
-            self.__move_textures[Move.NO] = self.__move_textures[direction][0]
+            self.__move_textures[Direction.NO] = self.__move_textures[direction][0]
 
         self.move_vector_normalized = vector
         self.textures = self.__move_textures[direction]

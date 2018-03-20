@@ -1,4 +1,4 @@
-class Move:
+class Direction:
     NO = 0
 
     LEFT = 2

@@ -1,5 +1,4 @@
 from kappa.common.object.GameObject import GameObject
-from kappa.common.texture.Animation import Animation
 from kappa.common.texture.TextureController import TextureController
 
 
@@ -16,5 +15,5 @@ class StateTextureController(TextureController):
     def __delitem__(self, key):
         del self.__texture_holder[key]
 
-    def get_textures(self, obj: GameObject) -> Animation:
+    def get_textures(self, obj: GameObject):
         return self[obj.state]

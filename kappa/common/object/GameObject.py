@@ -4,6 +4,8 @@ from kappa.common.object.State import State
 from kappa.common.object.Direction import Direction
 from kappa.common.object.shape.Shape import Shape
 from kappa.common.object.update.UpdateStrategy import UpdateStrategy
+from kappa.common.texture.Animation import Animation
+from kappa.common.texture.TextureController import TextureController
 from ...core.frame.Frame import Frame
 from ...core.geom import EPSILON
 from ...core.geom import Point
@@ -14,16 +16,21 @@ from ...logger.Logger import Logger
 class GameObject:
     log = Logger(__name__).get()
 
-    def __init__(self, center: Point, shape: Shape, update_strategy: UpdateStrategy, texture_offset: Vector = None):
+    def __init__(self, **kwargs):
         self.state = State.STAND
-        self.center = center
-        self.direction = Direction.NO
-        self.__shape: Shape = shape
-        self.__u: UpdateStrategy = update_strategy
+        self.center: Point = kwargs['center']
+        self.direction = Direction.UP
+        self.__shape: Shape = kwargs['shape']
+        self.__u: UpdateStrategy = kwargs['update_strategy']
         self.__texture_controller = None
-        if texture_offset:
-            self.__texture_offset = texture_offset
-        elif self.__u.textures:
+        self.textures: Animation = None
+        self.move_vector_normalized = Vector(0, 0)
+        if 'texture_controller' in kwargs.keys():
+            self.__texture_controller: TextureController = kwargs['texture_controller']
+            self.textures = self.__texture_controller.get_textures(self)
+        if 'texture_offset' in kwargs.keys():
+            self.__texture_offset = kwargs['texture_offset']
+        elif self.textures:
             texture_size = self.texture.get_size()
             self.__texture_offset = Vector(*[texture_size[i] // 2 for i in range(2)])
 
@@ -41,11 +48,7 @@ class GameObject:
 
     def update(self):
         GameObject.log.debug("Updating {}".format(self))
-        self.__u.update()
-
-    def reset(self):
-        GameObject.log.debug("Resetting {}".format(self))
-        self.__u.reset()
+        self.textures.update()
 
     def start_move(self, direction):
         GameObject.log.debug("Starting move {} with direction={}".format(self, direction))
@@ -139,11 +142,11 @@ class GameObject:
 
     @property
     def texture(self) -> Frame:
-        return self.__u.texture
+        return self.textures.get()
 
     @property
     def move_vector(self):
-        return self.__u.get_time_vector()
+        return self.move_vector_normalized * self.speed
 
     @property
     def is_movable(self):

@@ -1,9 +1,8 @@
 from math import sqrt
 
-from kappa.common.object.State import State
 from kappa.common.object.Direction import Direction
+from kappa.common.object.State import State
 from kappa.common.object.shape.Shape import Shape
-from kappa.common.object.update.UpdateStrategy import UpdateStrategy
 from kappa.common.texture.Animation import Animation
 from kappa.common.texture.TextureController import TextureController
 from ...core.frame.Frame import Frame
@@ -20,8 +19,8 @@ class GameObject:
         self.state = State.STAND
         self.center: Point = kwargs['center']
         self.direction = Direction.UP
+        self.speed = 0
         self.__shape: Shape = kwargs['shape']
-        self.__u: UpdateStrategy = kwargs['update_strategy']
         self.__texture_controller = None
         self.textures: Animation = None
         self.move_vector_normalized = Vector(0, 0)
@@ -50,27 +49,16 @@ class GameObject:
         GameObject.log.debug("Updating {}".format(self))
         self.textures.update()
 
-    def start_move(self, direction):
-        GameObject.log.debug("Starting move {} with direction={}".format(self, direction))
-        self.__u.start_move(direction)
-
-    def stop_move(self, direction):
-        GameObject.log.debug("Stopping move {} with direction={}".format(self, direction))
-        self.__u.stop_move(direction)
-
-    def move_offset(self, offset: Vector):
-        self.center += offset
-
     def move(self, t=1):
-        self.center += self.__u.get_time_vector(t)
+        self.center = self.get_time_position(t)
 
     def get_time_position(self, t=1) -> Point:
-        return self.center + self.__u.get_time_vector(t)
+        return self.center + self.move_vector * t
 
     def intersect(self, obj: __name__, t=0) -> bool:
         if self.shape.is_circle and obj.shape.is_circle:
             c: Vector = obj.center - self.center
-            v: Vector = self.__u.get_time_vector(t)
+            v: Vector = self.move_vector * t
             r: float = obj.shape.radius + self.__shape.radius
             d = v * c - (c * c - r * r)
             GameObject.log.debug("Calculated c={}, v={}, r={}, d={}".format(c.coords, v.coords, r, d))
@@ -150,19 +138,11 @@ class GameObject:
 
     @property
     def is_movable(self):
-        return self.__u.is_movable
+        return self.speed > 0
 
     @property
     def shape(self):
         return self.__shape
-
-    @property
-    def speed(self):
-        return self.__u.speed
-
-    @speed.setter
-    def speed(self, value):
-        self.__u.speed = value
 
     @property
     def texture_controller(self):

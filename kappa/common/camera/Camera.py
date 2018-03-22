@@ -1,5 +1,4 @@
 from kappa.common.object.shape.RectShape import RectShape
-from kappa.common.object.update.MovableUpdateStrategy import MovableUpdateStrategy
 from ..object.GameObject import GameObject
 from ...core.geom.Point import Point
 
@@ -9,5 +8,4 @@ class Camera(GameObject):
         GameObject.__init__(self,
                             center=center,
                             shape=RectShape(w, h),
-                            update_strategy=MovableUpdateStrategy()
                             )

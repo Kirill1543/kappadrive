@@ -17,7 +17,6 @@ class GameObject:
 
     def __init__(self, **kwargs):
         self.center: Point = kwargs['center']
-        self.speed = 0
         self.__shape: Shape = kwargs['shape']
         self.__texture_controller = None
         self.textures: Animation = None
@@ -133,7 +132,7 @@ class GameObject:
 
     @property
     def is_movable(self) -> bool:
-        return False
+        return hasattr(self, 'speed')
 
     @property
     def shape(self):

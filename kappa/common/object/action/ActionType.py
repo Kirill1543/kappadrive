@@ -1,3 +1,5 @@
 class ActionType:
-    STOP_MOVE = 0
-    START_MOVE = 1
+    STOP_MOVE = 'StopMove'
+    START_MOVE = 'StartMove'
+    UPDATE_MOVE = 'UpdateMove'
+    UPDATE_TEXTURE = 'UpdateTexture'

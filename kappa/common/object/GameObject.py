@@ -16,9 +16,7 @@ class GameObject:
     log = Logger(__name__).get()
 
     def __init__(self, **kwargs):
-        self.state = State.STAND
         self.center: Point = kwargs['center']
-        self.direction = Direction.UP
         self.speed = 0
         self.__shape: Shape = kwargs['shape']
         self.__texture_controller = None
@@ -65,9 +63,6 @@ class GameObject:
             if d >= 0.0:
                 return True
         return False
-
-    def is_going_intersect(self, obj) -> bool:
-        return self.intersect(obj, 1)
 
     def move_time_to(self, obj: __name__) -> float:
         GameObject.log.debug("Calculating moving time from {} to {}".format(self, obj))
@@ -137,8 +132,8 @@ class GameObject:
         return self.move_vector_normalized * self.speed
 
     @property
-    def is_movable(self):
-        return self.speed > 0
+    def is_movable(self) -> bool:
+        return False
 
     @property
     def shape(self):

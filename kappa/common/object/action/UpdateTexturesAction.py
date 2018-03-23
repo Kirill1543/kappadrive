@@ -7,6 +7,7 @@ from kappa.common.object.action.ActionType import ActionType
 class UpdateTexturesAction(Action):
     def execute(self, obj: GameObject):
         obj.textures = obj.texture_controller.get_textures(obj)
+        obj.textures.reset()
         return ActionStatus.SUCCESS
 
     @property

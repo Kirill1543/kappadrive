@@ -1,4 +1,3 @@
-from kappa.common.object.GameObject import GameObject
 from kappa.common.object.action.Action import Action
 from kappa.common.object.action.ActionStatus import ActionStatus
 from kappa.system.meta.Singleton import Singleton
@@ -8,7 +7,7 @@ class ActionHandler(metaclass=Singleton):
     def __init__(self):
         self.obj = None
 
-    def handle(self, obj: GameObject, action: Action, **kwargs):
+    def handle(self, obj, action: Action, **kwargs):
         self.obj = obj
         self.run_action(action, **kwargs)
 

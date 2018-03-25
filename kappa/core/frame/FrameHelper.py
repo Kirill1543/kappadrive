@@ -13,3 +13,7 @@ class FrameHelper:
         w_fin = w_fin or w
         h_fin = h_fin or h
         return FrameHelper.scale_to(image.subframe(x, y, w, h), (w_fin, h_fin))
+
+    @staticmethod
+    def flip(frame, xbool, ybool):
+        return Frame.by_surface(pygame.transform.flip(frame.surface, xbool, ybool))

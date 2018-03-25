@@ -9,13 +9,17 @@ from kappa.common.object.action.UpdateMoveAction import UpdateMoveAction
 
 class StopMoveAction(Action):
     def execute(self, obj: GameObject, **kwargs):
-        direction = kwargs['direction']
-        if direction == obj.x_move:
-            obj.x_move = Direction.NO
-        elif direction == obj.y_move:
-            obj.y_move = Direction.NO
+        if 'direction' in kwargs.keys():
+            direction = kwargs['direction']
+            if direction == obj.x_move:
+                obj.x_move = Direction.NO
+            elif direction == obj.y_move:
+                obj.y_move = Direction.NO
+            else:
+                return ActionStatus.SKIP
         else:
-            return ActionStatus.SKIP
+            obj.x_move = Direction.NO
+            obj.y_move = Direction.NO
         if obj.x_move + obj.y_move == Direction.NO:
             obj.state = State.STAND
         UpdateMoveAction().execute(obj)

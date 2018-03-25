@@ -1,7 +1,7 @@
 from math import sqrt
 
-from kappa.common.object.Direction import Direction
-from kappa.common.object.State import State
+from kappa.common.object.action.Action import Action
+from kappa.common.object.action.ActionHandler import ActionHandler
 from kappa.common.object.shape.Shape import Shape
 from kappa.common.texture.Animation import Animation
 from kappa.common.texture.TextureController import TextureController
@@ -19,11 +19,14 @@ class GameObject:
         self.center: Point = kwargs['center']
         self.__shape: Shape = kwargs['shape']
         self.__texture_controller = None
+        self.__action_handler = None
         self.textures: Animation = None
         self.move_vector_normalized = Vector(0, 0)
         if 'texture_controller' in kwargs.keys():
             self.__texture_controller: TextureController = kwargs['texture_controller']
             self.textures = self.__texture_controller.get_textures(self)
+        if 'action_handler' in kwargs.keys():
+            self.__action_handler: ActionHandler = kwargs['action_handler']
         if 'texture_offset' in kwargs.keys():
             self.__texture_offset = kwargs['texture_offset']
         elif self.textures:
@@ -45,6 +48,13 @@ class GameObject:
     def update(self):
         GameObject.log.debug("Updating {}".format(self))
         self.textures.update()
+
+    def handle(self, action: Action, **kwargs):
+        GameObject.log.debug("{}: Handling {}".format(self, action))
+        if self.__action_handler:
+            self.__action_handler.handle(self, action, **kwargs)
+        else:
+            action.execute(self, kwargs)
 
     def move(self, t=1):
         self.center = self.get_time_position(t)
@@ -145,3 +155,11 @@ class GameObject:
     @texture_controller.setter
     def texture_controller(self, value):
         self.__texture_controller = value
+
+    @property
+    def action_handler(self):
+        return self.__action_handler
+
+    @action_handler.setter
+    def action_handler(self, value):
+        self.__action_handler = value

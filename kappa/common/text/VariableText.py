@@ -3,11 +3,10 @@ from kappa.core.frame.Frame import Frame
 
 
 class VariableText(Viewable):
-    def __init__(self, text, font, color, *args):
-        self.__text = text
+    def __init__(self, text_supplier, font, color):
+        self.__text_supplier = text_supplier
         self.__font = font
         self.__color = color
-        self.__vars = args
 
     def view(self) -> Frame:
-        return self.__font.render(self.__text.format(*[var() for var in self.__vars]), False, self.__color)
+        return self.__font.render(self.__text_supplier(), False, self.__color)

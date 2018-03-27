@@ -18,13 +18,13 @@ class Screen:
         Screen.log.debug("Displaying background...")
         self.__screen.display(self.background, (0, 0))
         Screen.log.debug("Displaying view list...")
-        for view in self.__view_list:
-            Screen.log.debug("Displaying {}".format(view))
-            self.__screen.display(view.display(), (view.x, view.y))
+        for view, coord in self.__view_list:
+            Screen.log.debug("Displaying {} to {}".format(view, coord))
+            self.__screen.display(view.display(), (coord[0], coord[1]))
 
     def update(self):
-        for view in self.__view_list:
+        for view, coord in self.__view_list:
             view.update()
 
-    def add_view(self, view: View):
-        self.__view_list.append(view)
+    def add_view(self, view: View, coord):
+        self.__view_list.append((view, coord))

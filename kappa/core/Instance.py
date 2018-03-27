@@ -27,7 +27,7 @@ class Instance:
         self.clock: Clock = None
         self.screen: Screen = None
         self.running = True
-        self.max_fps = 100
+        self.max_fps = 0
 
     def init(self):
         pygame.init()

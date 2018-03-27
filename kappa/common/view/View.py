@@ -4,30 +4,12 @@ from ...core.frame import Frame
 
 
 class View:
-    def __init__(self, viewable: Viewable, coords=(0, 0), camera: Camera = Camera()):
-        self.__x = coords[0]
-        self.__y = coords[1]
+    def __init__(self, viewable: Viewable, camera: Camera = None):
         self.__viewable: Viewable = viewable
         self.__camera: Camera = camera
 
     def __str__(self):
-        return "View<{}:{}:({},{})>".format(self.__viewable, self.__camera, self.__x, self.__y)
-
-    @property
-    def x(self):
-        return self.__x
-
-    @x.setter
-    def x(self, value):
-        self.__x = value
-
-    @property
-    def y(self):
-        return self.__y
-
-    @y.setter
-    def y(self, value):
-        self.__y = value
+        return "View<{}:{}>".format(self.__viewable, self.__camera)
 
     @property
     def camera(self):
@@ -38,7 +20,10 @@ class View:
         self.__camera = value
 
     def display(self) -> Frame:
-        return self.__viewable.view(self.__camera)
+        if self.__camera:
+            return self.__viewable.view(self.__camera)
+        else:
+            return self.__viewable.view()
 
     def update(self):
         self.__viewable.update()

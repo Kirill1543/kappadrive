@@ -5,6 +5,12 @@ class Action(metaclass=Singleton):
     def __init__(self):
         pass
 
+    def __str__(self):
+        return "Action {}".format(self.name)
+
+    def __repr__(self):
+        return self.__str__()
+
     def execute(self, *args, **kwargs):
         pass
 

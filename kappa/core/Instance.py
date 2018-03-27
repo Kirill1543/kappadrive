@@ -9,11 +9,12 @@ from ..logger.Logger import Logger
 
 def timed(method):
     def _timed(*args, **kwargs):
-        Instance.log.debug("Started {} iteration".format(method.__name__))
         start_time = timeit.default_timer()
+        name = method.__name__[2:]
+        Instance.log.debug("Started {} iteration".format(name))
         method(*args, **kwargs)
         Instance.log.debug(
-            "Finished {} iteration. Time={}ms".format(method.__name__, (timeit.default_timer() - start_time) * 1000))
+            "Finished {} iteration. Time={}ms".format(name, (timeit.default_timer() - start_time) * 1000))
 
     return _timed
 
@@ -26,7 +27,7 @@ class Instance:
         self.clock: Clock = None
         self.screen: Screen = None
         self.running = True
-        self.fps = 100
+        self.max_fps = 100
 
     def init(self):
         pygame.init()
@@ -35,20 +36,20 @@ class Instance:
 
     def start(self):
         while self.running:
-            self.tick()
+            self.__tick()
 
     @timed
-    def tick(self):
-        self.clock.tick(self.fps)
+    def __tick(self):
+        self.clock.tick(self.max_fps)
 
-        self.handle_events()
+        self.__handle_events()
 
-        self.update()
+        self.__update()
 
-        self.display()
+        self.__display()
 
     @timed
-    def handle_events(self):
+    def __handle_events(self):
         for event in pygame.event.get():
             if not self.parse_event(event):
                 self.running = False
@@ -56,10 +57,19 @@ class Instance:
     def parse_event(self, event):
         return 1
 
+    @timed
+    def __update(self):
+        self.update()
+
     def update(self):
         self.screen.update()
 
     @timed
-    def display(self):
+    def __display(self):
         self.screen.display()
         pygame.display.flip()
+        Instance.log.debug("Current FPS : {}".format(self.fps))
+
+    @property
+    def fps(self):
+        return self.clock.get_fps()

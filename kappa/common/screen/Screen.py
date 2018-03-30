@@ -14,6 +14,9 @@ class Screen:
 
         self.__view_list = []
 
+    def init(self):
+        pass
+
     def display(self):
         Screen.log.debug("Displaying background...")
         self.__screen.display(self.background, (0, 0))

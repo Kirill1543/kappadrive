@@ -23,6 +23,7 @@ class Instance:
     log = Logger(__name__).get()
 
     def __init__(self, caption: str = 'kappa game'):
+        pygame.init()
         self.caption: str = caption
         self.clock: Clock = None
         self.screen: Screen = None
@@ -30,9 +31,9 @@ class Instance:
         self.max_fps = 0
 
     def init(self):
-        pygame.init()
         self.clock = Clock()
         pygame.display.set_caption(self.caption)
+        self.screen.init()
 
     def start(self):
         while self.running:

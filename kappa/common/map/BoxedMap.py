@@ -4,7 +4,6 @@ from ..camera import Camera
 from ..map.Box import Box
 from ..object.GameObject import GameObject
 from ..view.Viewable import Viewable
-from ...Settings import NEAR_OBJECTS_MOVE, NEAR_OBJECTS_DRAW, DRAW_DEBUG
 from ...core.Color import WHITE, RED, BLUE, GREEN
 from ...core.frame.Frame import Frame
 from ...core.geom import intersection_circle_with_circle, Circle, EPSILON, Point
@@ -20,11 +19,14 @@ class BoxedMap(Viewable):
         self.width = width
         self.height = height
         self.levels = levels
+        self.debug = False
         self.__box_width = None
         self.__box_height = None
         self.__boxes = []
         self.__display_obj_queue = None
         self.__display_frame = None
+        self.NEAR_OBJECTS_DRAW = 1
+        self.NEAR_OBJECTS_MOVE = 1
 
     def __str__(self):
         out = ""
@@ -92,7 +94,7 @@ class BoxedMap(Viewable):
                 img_lt_corner = (offset_w, offset_h)
                 img_size = (self.__box_width - offset_w, self.__box_height - offset_h)
                 curr_box = self.boxes[int(camera.center.z)][box_h][box_w]
-                img_to_blit = curr_box.build_background()
+                img_to_blit = curr_box.build_background(self.debug)
                 frame.display(img_to_blit.subframe(*img_lt_corner, *img_size), (pos_x, pos_y))
 
                 pos_x += self.__box_width - offset_w
@@ -101,10 +103,10 @@ class BoxedMap(Viewable):
             pos_y += self.__box_height - offset_h
             offset_h = 0
 
-        for box_h in range(min(lt_box_id[1] - NEAR_OBJECTS_DRAW, 0),
-                           max(rb_box_id[1] + NEAR_OBJECTS_DRAW, self.boxes_height)):
-            for box_w in range(min(lt_box_id[0] - NEAR_OBJECTS_DRAW, 0),
-                               max(rb_box_id[0] + NEAR_OBJECTS_DRAW, self.boxes_width)):
+        for box_h in range(min(lt_box_id[1] - self.NEAR_OBJECTS_DRAW, 0),
+                           max(rb_box_id[1] + self.NEAR_OBJECTS_DRAW, self.boxes_height)):
+            for box_w in range(min(lt_box_id[0] - self.NEAR_OBJECTS_DRAW, 0),
+                               max(rb_box_id[0] + self.NEAR_OBJECTS_DRAW, self.boxes_width)):
                 self.__display_obj_queue += self.boxes[int(camera.center.z)][box_h][box_w].object_list
 
     def __display_objects(self, camera: Camera, frame: Frame):
@@ -114,7 +116,7 @@ class BoxedMap(Viewable):
             coords = (obj.texture_topleft - camera.topleft).to_int().coords
             BoxedMap.log.debug("Adding texture for {} to Camera Position {}".format(obj, coords))
             frame.display(obj.texture, (coords[0], coords[1]))
-            if DRAW_DEBUG:
+            if self.debug:
                 obj.draw_shape_on(frame, obj.center - slicing)
                 if obj.is_movable:
                     self.__draw_lines(frame, obj, slicing)
@@ -138,7 +140,7 @@ class BoxedMap(Viewable):
 
     def __get_near_obj_list(self, obj: GameObject):
         curr_box = int(obj.center.x) // self.__box_width, int(obj.center.y) // self.__box_height
-        lt, rb = self.__expand_boxes((curr_box, curr_box), NEAR_OBJECTS_MOVE)
+        lt, rb = self.__expand_boxes((curr_box, curr_box), self.NEAR_OBJECTS_MOVE)
         objects = []
         for box_h in range(lt[1], rb[1] + 1):
             for box_w in range(lt[0], rb[0] + 1):

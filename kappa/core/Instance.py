@@ -52,6 +52,7 @@ class Instance:
     @timed
     def __handle_events(self):
         for event in pygame.event.get():
+            Instance.log.debug("Caught Event = {}".format(event))
             if not self.parse_event(event):
                 self.running = False
 

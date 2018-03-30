@@ -1,8 +1,13 @@
+import os
 import logging
 
-import os
+SCRIPT_DIR = os.path.dirname(
+    os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__), os.pardir, os.pardir, os.pardir)))
 
-from kappa.Settings import LOG_LEVEL, LOG_DIR, LOG_FILE
+LOG_DIR: str = os.path.join(SCRIPT_DIR, 'logs')
+# LOG_FILE: str = 'log%s.log' % datetime.now().strftime('%Y_%m_%d_%H-%M-%S')
+LOG_FILE: str = 'log.log'
+LOG_LEVEL = logging.INFO
 
 
 class Logger:

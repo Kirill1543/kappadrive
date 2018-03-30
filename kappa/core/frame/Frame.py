@@ -6,8 +6,8 @@ class Frame:
         self.__surface = pygame.Surface(size)
 
     @staticmethod
-    def set_mode(size):
-        return Frame.by_surface(pygame.display.set_mode(size))
+    def set_mode(size, flags=0, depth=0):
+        return Frame.by_surface(pygame.display.set_mode(size, flags, depth))
 
     @property
     def surface(self):

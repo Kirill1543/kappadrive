@@ -1,4 +1,3 @@
-from ...Settings import DRAW_DEBUG
 from ...core.Color import BLACK
 from ...core.frame.Frame import Frame
 from ...core.primitives.Draw import Draw
@@ -16,7 +15,7 @@ class Box:
     def __repr__(self):
         return self.__str__()
 
-    def build_background(self):
+    def build_background(self, debug=False):
         frame = Frame(self.size)
         background_height = len(self.__background)
         background_width = len(self.__background[0])
@@ -24,7 +23,7 @@ class Box:
             for j in range(background_width):
                 frame.display((self.__background[j][i]),
                               (j * self.size[0] // background_width, i * self.size[1] // background_height))
-        if DRAW_DEBUG:
+        if debug:
             Draw.rect(frame, BLACK, (0, 0), self.size, 1)
         return frame
 

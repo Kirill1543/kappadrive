@@ -7,8 +7,8 @@ class Screen:
     log = Logger(__name__).get()
     BACKGROUND_DEFAULT_COLOR = (0, 0, 0)
 
-    def __init__(self, size):
-        self.__screen = Frame.set_mode(size)
+    def __init__(self, size, flags=0):
+        self.__screen = Frame.set_mode(size, flags)
         self.background = Frame.empty(size)
         self.background.fill(Screen.BACKGROUND_DEFAULT_COLOR)
 

@@ -13,7 +13,8 @@ from .Point import Point
 from .Circle import Circle
 from .Line import Line
 
-__all__ = ["Vector", "Circle", "Point", "Coordinates", "Line", "Angle", "O"]
+__all__ = ["Vector", "Circle", "Point", "Coordinates", "Line", "Angle", "O", "intersection_circle_with_circle",
+           "EPSILON"]
 
 O = Point(0, 0)
 

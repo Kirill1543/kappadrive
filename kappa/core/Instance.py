@@ -39,6 +39,11 @@ class Instance:
         while self.running:
             self.__tick()
 
+    def destroy(self):
+        if pygame.font.get_init():
+            pygame.font.quit()
+        pygame.quit()
+
     @timed
     def __tick(self):
         self.clock.tick(self.max_fps)

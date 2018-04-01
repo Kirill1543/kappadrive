@@ -1,3 +1,4 @@
+from kappa.core.event.Mouse import Mouse
 from ..view.View import View
 from ...core.frame.Frame import Frame
 from ...logger.Logger import Logger
@@ -8,6 +9,7 @@ class Screen:
     BACKGROUND_DEFAULT_COLOR = (0, 0, 0)
 
     def __init__(self, size, flags=0):
+        Mouse.set_visible(False)
         self.__screen = Frame.set_mode(size, flags)
         self.background = Frame.empty(size)
         self.background.fill(Screen.BACKGROUND_DEFAULT_COLOR)

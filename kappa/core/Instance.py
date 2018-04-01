@@ -24,6 +24,8 @@ class Instance:
 
     def __init__(self, caption: str = 'kappa game'):
         pygame.init()
+        self.info = pygame.display.Info()
+        Instance.log.info(self.info)
         self.caption: str = caption
         self.clock: Clock = None
         self.screen: Screen = None
